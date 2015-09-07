@@ -1,0 +1,29 @@
+{
+  "name": "branch-diff",
+  "version": "1.0.2",
+  "description": "A tool to list print the commits on one git branch that are not on another using lose comparison",
+  "main": "branch-diff.js",
+  "bin": {
+    "branch-diff": "./branch-diff.js"
+  },
+  "author": "Rod <rod@vagg.org> (http://r.va.gg/)",
+  "license": "MIT",
+  "dependencies": {
+    "bl": "~1.0.0",
+    "chalk": "~1.1.0",
+    "changelog-maker": "~1.8.1",
+    "commit-stream": "~1.0.1",
+    "deep-equal": "~1.0.0",
+    "list-stream": "~1.0.0",
+    "map-async": "~0.1.1",
+    "minimist": "~1.1.1",
+    "pkg-to-id": "~0.0.3",
+    "split2": "~1.0.0",
+    "through2": "~2.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rvagg/branch-diff.git"
+  },
+  "preferGlobal": true
+}
