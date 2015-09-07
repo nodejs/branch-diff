@@ -15,6 +15,7 @@ const spawn          = require('child_process').spawn
     , map            = require('map-async')
     , commitToOutput = require('changelog-maker/commit-to-output')
     , collectCommitLabels = require('changelog-maker/collect-commit-labels')
+    , groupCommits   = require('changelog-maker/group-commits')
 
     , pkgFile        = path.join(process.cwd(), 'package.json')
     , pkgData        = fs.existsSync(pkgFile) ? require(pkgFile) : {}
@@ -24,7 +25,7 @@ const spawn          = require('child_process').spawn
     , simple         = argv.simple || argv.s
     , ghId           = {
           user: pkgId.user || 'nodejs'
-        , name: pkgId.name || 'io.js'
+        , name: pkgId.name || 'node'
       }
 
 
@@ -68,6 +69,9 @@ function onCollected (err, branchCommits) {
     if (err)
       throw err
 
+    if (argv.group)
+      list = groupCommits(list)
+
     list = list.map(function (commit) {
       return commitToOutput(commit, simple, ghId)
     })
@@ -104,5 +108,5 @@ function collect (branch) {
       throw new Error('git command [' + gitcmd + '] exited with code ' + code)
   })
 
-  return child.stdout.pipe(split2()).pipe(commitStream())
+  return child.stdout.pipe(split2()).pipe(commitStream(ghId.user, ghId.name))
 }
