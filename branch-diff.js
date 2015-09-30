@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+'use strict'
+
 const spawn          = require('child_process').spawn
     , fs             = require('fs')
     , path           = require('path')
@@ -33,21 +35,35 @@ if (!branch1 || !branch2)
   throw new Error('Must supply two branch names to compare')
 
 
-map([ branch1, branch2 ], function (branch, callback) {
-  collect(branch).pipe(listStream.obj(callback))
-}, onCollected)
+function findMergeBase (callback) {
+  const gitcmd = `git merge-base ${branch1} ${branch2}`
+  rungit(gitcmd).pipe(bl((err, data) => {
+    if (err)
+      return callback(err)
 
+    callback(null, data.toString().substr(0, 10))
+  }))
+}
+
+
+findMergeBase((err, commit) => {
+  console.log(`Merge base of ${branch1} and ${branch2} is ${commit}`)
+
+  map([ branch1, branch2 ], (branch, callback) => {
+    collect(branch, commit).pipe(listStream.obj(callback))
+  }, onCollected)
+})
 
 function onCollected (err, branchCommits) {
   if (err)
     throw err
 
-  [ branch1, branch2 ].forEach(function (branch, i) {
+  [ branch1, branch2 ].forEach((branch, i) => {
     console.log(`${branchCommits[i].length} commits on ${branch}...`)
   })
 
   function isInList (commit) {
-    return branchCommits[0].some(function (c) {
+    return branchCommits[0].some((c) => {
       if (commit.sha === c.sha)
         return true
       if (commit.summary === c.summary
@@ -59,22 +75,18 @@ function onCollected (err, branchCommits) {
     })
   }
 
-  var list = branchCommits[1].filter(function filter (commit) {
-    return !isInList(commit)
-  })
+  let list = branchCommits[1].filter((commit) => !isInList(commit))
   
   console.log(`${list.length} commits on ${branch2} that are not on ${branch1}:`)
 
-  collectCommitLabels(list, function (err) {
+  collectCommitLabels(list, (err) => {
     if (err)
       throw err
 
     if (argv.group)
       list = groupCommits(list)
 
-    list = list.map(function (commit) {
-      return commitToOutput(commit, simple, ghId)
-    })
+    list = list.map((commit) => commitToOutput(commit, simple, ghId))
 
     printCommits(list)
   })
@@ -82,7 +94,7 @@ function onCollected (err, branchCommits) {
 
 
 function printCommits (list) {
-  var out = list.join('\n') + '\n'
+  let out = list.join('\n') + '\n'
 
   if (!process.stdout.isTTY)
     out = chalk.stripColor(out)
@@ -91,11 +103,18 @@ function printCommits (list) {
 }
 
 
-function collect (branch) {
-  var gitcmd = `git log ${branch}`
-    , child  = spawn('bash', [ '-c', gitcmd ])
+function collect (branch, startCommit) {
+  const gitcmd = `git log ${startCommit}..${branch}`
+  return rungit(gitcmd)
+    .pipe(split2())
+    .pipe(commitStream(ghId.user, ghId.name))
+}
 
-  child.stderr.pipe(bl(function (err, _data) {
+
+function rungit (gitcmd) {
+  const child = spawn('bash', [ '-c', gitcmd ])
+
+  child.stderr.pipe(bl((err, _data) => {
     if (err)
       throw err
 
@@ -103,10 +122,10 @@ function collect (branch) {
       process.stderr.write(_data)
   }))
 
-  child.on('close', function (code) {
+  child.on('close', (code) => {
     if (code)
       throw new Error('git command [' + gitcmd + '] exited with code ' + code)
   })
 
-  return child.stdout.pipe(split2()).pipe(commitStream(ghId.user, ghId.name))
+  return child.stdout
 }
