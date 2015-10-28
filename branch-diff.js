@@ -72,9 +72,11 @@ function diffCollected (options, branchCommits, callback) {
     if (err)
       return callback(err)
 
-    if (options.patchOnly) {
+    if (options.excludeLabels) {
       list = list.filter((commit) => {
-        return !commit.labels || !commit.labels.some((label) => /^semver-(minor|major)$/.test(label))
+        return !commit.labels || !commit.labels.some((label) => {
+          return options.excludeLabels.indexOf(label) >= 0
+        })
       })
     }
 
@@ -109,13 +111,23 @@ function collect (repoPath, branch, startCommit) {
 module.exports = branchDiff
 
 if (require.main === module) {
-  let argv      = require('minimist')(process.argv.slice(2))
-    , branch1   = argv._[0]
-    , branch2   = argv._[1]
-    , simple    = argv.simple || argv.s
-    , group     = argv.group || argv.g
-    , patchOnly = argv['patch-only']
-    , options   = { simple, group, patchOnly }
+  let argv          = require('minimist')(process.argv.slice(2))
+    , branch1       = argv._[0]
+    , branch2       = argv._[1]
+    , simple        = argv.simple || argv.s
+    , group         = argv.group || argv.g
+    , excludeLabels = []
+    , options
+
+  if (argv['patch-only'])
+    excludeLabels = [ 'semver-minor', 'semver-major' ]
+  if (argv['exclude-label']) {
+    if (!Array.isArray(argv['exclude-label']))
+      argv['exclude-label'] = argv['exclude-label'].split(',')
+    excludeLabels = excludeLabels.concat(argv['exclude-label'])
+  }
+
+  options = { simple, group, excludeLabels }
 
   branchDiff(branch1, branch2, options, (err, list) => {
     if (err)

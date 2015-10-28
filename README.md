@@ -26,7 +26,8 @@ But the comparison isn't quite as strict, generally leading to a shorter list of
 
 * `--simple` or `-s`: Don't print full markdown output, good for console printing without the additional fluff.
 * `--group` or `-g`: Group commits by prefix, this uses the part of the commit summary that is usually used in Node.js core to indicate subsystem for example. Groups are made up of numbers, letters, `,` and `-`, followed by a `:`.
-* `--patch-only`: Exclude any commits from the list that come from a GitHub pull request with either a `semver-major` or `semver-minor` label applied.
+* `--exclude-label`: Exclude any commits from the list that come from a GitHub pull request with the given label. Multiple `--exclude-label` options may be provided, they will also be split by `,`. e.g. `--exclude-label=semver-major,meta`.
+* `--patch-only`: An alias for `--exclude-label=semver-major,semver-minor`.
 
 ## License
 
