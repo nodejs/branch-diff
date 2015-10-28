@@ -72,6 +72,12 @@ function diffCollected (options, branchCommits, callback) {
     if (err)
       return callback(err)
 
+    if (options.patchOnly) {
+      list = list.filter((commit) => {
+        return !commit.labels || !commit.labels.some((label) => /^semver-(minor|major)$/.test(label))
+      })
+    }
+
     if (options.group)
       list = groupCommits(list)
 
@@ -80,7 +86,9 @@ function diffCollected (options, branchCommits, callback) {
 }
 
 
-function printCommits (list) {
+function printCommits (list, simple) {
+  list = list.map((commit) => commitToOutput(commit, simple, ghId))
+
   let out = list.join('\n') + '\n'
 
   if (!process.stdout.isTTY)
@@ -101,19 +109,18 @@ function collect (repoPath, branch, startCommit) {
 module.exports = branchDiff
 
 if (require.main === module) {
-  let argv    = require('minimist')(process.argv.slice(2))
-    , branch1 = argv._[0]
-    , branch2 = argv._[1]
-    , simple  = argv.simple || argv.s
-    , group   = argv.group || argv.g
-    , options = { simple, group }
+  let argv      = require('minimist')(process.argv.slice(2))
+    , branch1   = argv._[0]
+    , branch2   = argv._[1]
+    , simple    = argv.simple || argv.s
+    , group     = argv.group || argv.g
+    , patchOnly = argv['patch-only']
+    , options   = { simple, group, patchOnly }
 
   branchDiff(branch1, branch2, options, (err, list) => {
     if (err)
       throw err
 
-    list = list.map((commit) => commitToOutput(commit, options.simple, ghId))
-
-    printCommits(list)
+    printCommits(list, simple)
   })
 }
