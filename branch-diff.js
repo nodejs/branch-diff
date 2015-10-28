@@ -2,66 +2,57 @@
 
 'use strict'
 
-const spawn          = require('child_process').spawn
-    , fs             = require('fs')
+const fs             = require('fs')
     , path           = require('path')
     , commitStream   = require('commit-stream')
-    , through2       = require('through2')
     , split2         = require('split2')
     , listStream     = require('list-stream')
-    , bl             = require('bl')
-    , equal          = require('deep-equal')
     , pkgtoId        = require('pkg-to-id')
     , chalk          = require('chalk')
-    , argv           = require('minimist')(process.argv.slice(2))
     , map            = require('map-async')
     , commitToOutput = require('changelog-maker/commit-to-output')
     , collectCommitLabels = require('changelog-maker/collect-commit-labels')
     , groupCommits   = require('changelog-maker/group-commits')
+    , gitexec        = require('./gitexec')
 
     , pkgFile        = path.join(process.cwd(), 'package.json')
     , pkgData        = fs.existsSync(pkgFile) ? require(pkgFile) : {}
     , pkgId          = pkgtoId(pkgData)
-    , branch1        = argv._[0]
-    , branch2        = argv._[1]
-    , simple         = argv.simple || argv.s
     , ghId           = {
           user: pkgId.user || 'nodejs'
         , name: pkgId.name || 'node'
       }
 
 
-if (!branch1 || !branch2)
-  throw new Error('Must supply two branch names to compare')
+function branchDiff (branch1, branch2, options, callback) {
+  if (!branch1 || !branch2)
+    return callback(new Error('Must supply two branch names to compare'))
 
+  let repoPath = options.repoPath || process.cwd()
 
-function findMergeBase (callback) {
-  const gitcmd = `git merge-base ${branch1} ${branch2}`
-  rungit(gitcmd).pipe(bl((err, data) => {
-    if (err)
-      return callback(err)
-
-    callback(null, data.toString().substr(0, 10))
-  }))
+  findMergeBase(repoPath, branch1, branch2, (err, commit) => {
+    map(
+        [ branch1, branch2 ], (branch, callback) => {
+          collect(repoPath, branch, commit).pipe(listStream.obj(callback))
+        }
+      , (err, branchCommits) => diffCollected(options, branchCommits, callback)
+    )
+  })
 }
 
 
-findMergeBase((err, commit) => {
-  console.log(`Merge base of ${branch1} and ${branch2} is ${commit}`)
+function findMergeBase (repoPath, branch1, branch2, callback) {
+  const gitcmd = `git merge-base ${branch1} ${branch2}`
+  gitexec.execCollect(repoPath, gitcmd, (err, data) => {
+    if (err)
+      return callback(err)
 
-  map([ branch1, branch2 ], (branch, callback) => {
-    collect(branch, commit).pipe(listStream.obj(callback))
-  }, onCollected)
-})
-
-function onCollected (err, branchCommits) {
-  if (err)
-    throw err
-
-  [ branch1, branch2 ].forEach((branch, i) => {
-    console.log(`${branchCommits[i].length} commits on ${branch}...`)
+    callback(null, data.substr(0, 10))
   })
+}
 
+
+function diffCollected (options, branchCommits, callback) {
   function isInList (commit) {
     return branchCommits[0].some((c) => {
       if (commit.sha === c.sha)
@@ -76,19 +67,15 @@ function onCollected (err, branchCommits) {
   }
 
   let list = branchCommits[1].filter((commit) => !isInList(commit))
-  
-  console.log(`${list.length} commits on ${branch2} that are not on ${branch1}:`)
 
   collectCommitLabels(list, (err) => {
     if (err)
-      throw err
+      return callback(err)
 
-    if (argv.group)
+    if (options.group)
       list = groupCommits(list)
 
-    list = list.map((commit) => commitToOutput(commit, simple, ghId))
-
-    printCommits(list)
+    callback(null, list)
   })
 }
 
@@ -103,29 +90,30 @@ function printCommits (list) {
 }
 
 
-function collect (branch, startCommit) {
+function collect (repoPath, branch, startCommit) {
   const gitcmd = `git log ${startCommit}..${branch}`
-  return rungit(gitcmd)
+  return gitexec.exec(repoPath, gitcmd)
     .pipe(split2())
     .pipe(commitStream(ghId.user, ghId.name))
 }
 
 
-function rungit (gitcmd) {
-  const child = spawn('bash', [ '-c', gitcmd ])
+module.exports = branchDiff
 
-  child.stderr.pipe(bl((err, _data) => {
+if (require.main === module) {
+  let argv    = require('minimist')(process.argv.slice(2))
+    , branch1 = argv._[0]
+    , branch2 = argv._[1]
+    , simple  = argv.simple || argv.s
+    , group   = argv.group || argv.g
+    , options = { simple, group }
+
+  branchDiff(branch1, branch2, options, (err, list) => {
     if (err)
       throw err
 
-    if (_data.length)
-      process.stderr.write(_data)
-  }))
+    list = list.map((commit) => commitToOutput(commit, options.simple, ghId))
 
-  child.on('close', (code) => {
-    if (code)
-      throw new Error('git command [' + gitcmd + '] exited with code ' + code)
+    printCommits(list)
   })
-
-  return child.stdout
 }
