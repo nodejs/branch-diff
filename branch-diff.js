@@ -18,10 +18,21 @@ const fs             = require('fs')
     , pkgFile        = path.join(process.cwd(), 'package.json')
     , pkgData        = fs.existsSync(pkgFile) ? require(pkgFile) : {}
     , pkgId          = pkgtoId(pkgData)
+    , refcmd         = 'git rev-list --max-count=1 {{ref}}'
+    , commitdatecmd  = '$(git show -s --format=%cd `{{refcmd}}`)'
+    , gitcmd         = 'git log {{startCommit}}..{{branch}} --until="{{untilcmd}}"'
     , ghId           = {
           user: pkgId.user || 'nodejs'
         , name: pkgId.name || 'node'
       }
+
+
+function replace (s, m) {
+  Object.keys(m).forEach(function (k) {
+    s = s.replace(new RegExp('\\{\\{' + k + '\\}\\}', 'g'), m[k])
+  })
+  return s
+}
 
 
 function branchDiff (branch1, branch2, options, callback) {
@@ -33,7 +44,7 @@ function branchDiff (branch1, branch2, options, callback) {
   findMergeBase(repoPath, branch1, branch2, (err, commit) => {
     map(
         [ branch1, branch2 ], (branch, callback) => {
-          collect(repoPath, branch, commit).pipe(listStream.obj(callback))
+          collect(repoPath, branch, commit, branch == branch2 && options.endRef).pipe(listStream.obj(callback))
         }
       , (err, branchCommits) => diffCollected(options, branchCommits, callback)
     )
@@ -42,7 +53,8 @@ function branchDiff (branch1, branch2, options, callback) {
 
 
 function findMergeBase (repoPath, branch1, branch2, callback) {
-  const gitcmd = `git merge-base ${branch1} ${branch2}`
+  let gitcmd = `git merge-base ${branch1} ${branch2}`
+
   gitexec.execCollect(repoPath, gitcmd, (err, data) => {
     if (err)
       return callback(err)
@@ -100,9 +112,12 @@ function printCommits (list, simple) {
 }
 
 
-function collect (repoPath, branch, startCommit) {
-  const gitcmd = `git log ${startCommit}..${branch}`
-  return gitexec.exec(repoPath, gitcmd)
+function collect (repoPath, branch, startCommit, endRef) {
+  let endrefcmd = endRef && replace(refcmd, { ref: endRef })
+    , untilcmd  = endRef ? replace(commitdatecmd, { refcmd: endrefcmd }) : ''
+    , _gitcmd      = replace(gitcmd, { branch, startCommit, untilcmd })
+
+  return gitexec.exec(repoPath, _gitcmd)
     .pipe(split2())
     .pipe(commitStream(ghId.user, ghId.name))
 }
@@ -116,6 +131,7 @@ if (require.main === module) {
     , branch2       = argv._[1]
     , simple        = argv.simple || argv.s
     , group         = argv.group || argv.g
+    , endRef        = argv['end-ref']
     , excludeLabels = []
     , options
 
@@ -127,7 +143,7 @@ if (require.main === module) {
     excludeLabels = excludeLabels.concat(argv['exclude-label'])
   }
 
-  options = { simple, group, excludeLabels }
+  options = { simple, group, excludeLabels, endRef }
 
   branchDiff(branch1, branch2, options, (err, list) => {
     if (err)
