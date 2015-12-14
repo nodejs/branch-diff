@@ -13,7 +13,7 @@ const fs             = require('fs')
     , commitToOutput = require('changelog-maker/commit-to-output')
     , collectCommitLabels = require('changelog-maker/collect-commit-labels')
     , groupCommits   = require('changelog-maker/group-commits')
-    , gitexec        = require('./gitexec')
+    , gitexec        = require('gitexec')
 
     , pkgFile        = path.join(process.cwd(), 'package.json')
     , pkgData        = fs.existsSync(pkgFile) ? require(pkgFile) : {}
