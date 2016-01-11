@@ -69,11 +69,16 @@ function diffCollected (options, branchCommits, callback) {
     return branchCommits[0].some((c) => {
       if (commit.sha === c.sha)
         return true
-      if (commit.summary === c.summary
-          //&& equal(commit.description, c.description)
-          && commit.prUrl && c.prUrl
-          && commit.prUrl === c.prUrl)
-        return true
+      if (commit.summary === c.summary) {
+        if (commit.prUrl && c.prUrl) {
+            return commit.prUrl === c.prUrl
+        } else if (commit.author.name === c.author.name
+                && commit.author.email === c.author.email) {
+          if (process.stderr.isTTY)
+            console.error(`Note: Commit fell back to author checking: "${commit.summary}" -`, commit.author)
+          return true
+        }
+      }
       return false
     })
   }
