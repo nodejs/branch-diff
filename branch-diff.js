@@ -100,6 +100,30 @@ function diffCollected (options, branchCommits, callback) {
 }
 
 
+function applyCommits (list, bail) {
+  const cp = require('child_process')
+
+  let i = list.length
+  while (i--) {
+    const commit = list[i]
+    const out = cp.spawnSync('git', ['cherry-pick', commit.sha])
+
+    if (out.status === 0) {
+      continue
+    }
+
+    const cleanup = cp.spawnSync('git', ['cherry-pick', '--abort'])
+    if (cleanup.status !== 0) {
+      console.error('Error resetting git, bailing.')
+      return
+    }
+
+    console.log(`${bail ? 'Bailing' : 'Skipping'}: Could not apply ${commit.sha.slice(0, 7)}... ${commit.summary}`)
+    if (bail) return
+  }
+}
+
+
 function printCommits (list, simple) {
   list = list.map((commit) => commitToOutput(commit, simple, ghId))
 
@@ -134,6 +158,7 @@ if (require.main === module) {
     , endRef        = argv['end-ref']
     , excludeLabels = []
     , options
+    , bail          = argv.bail
 
   if (argv['patch-only'])
     excludeLabels = [ 'semver-minor', 'semver-major' ]
@@ -148,6 +173,11 @@ if (require.main === module) {
   branchDiff(branch1, branch2, options, (err, list) => {
     if (err)
       throw err
+
+    if (argv.apply) {
+      applyCommits(list, bail)
+      return
+    }
 
     printCommits(list, simple)
   })
