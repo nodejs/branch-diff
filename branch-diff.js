@@ -100,8 +100,12 @@ function diffCollected (options, branchCommits, callback) {
 }
 
 
-function printCommits (list, simple) {
-  list = list.map((commit) => commitToOutput(commit, simple, ghId))
+function printCommits (list, format) {
+  if (format === 'sha') {
+    list = list.map((commit) => `${commit.sha.substr(0, 10)}`)
+  } else {
+    list = list.map((commit) => commitToOutput(commit, format === 'simple', ghId))
+  }
 
   let out = list.join('\n') + '\n'
 
@@ -129,11 +133,15 @@ if (require.main === module) {
   let argv          = require('minimist')(process.argv.slice(2))
     , branch1       = argv._[0]
     , branch2       = argv._[1]
-    , simple        = argv.simple || argv.s
+    , format        = argv.format
     , group         = argv.group || argv.g
     , endRef        = argv['end-ref']
     , excludeLabels = []
     , options
+
+
+  if (argv.simple || argv.s)
+    format = 'simple'
 
   if (argv['patch-only'])
     excludeLabels = [ 'semver-minor', 'semver-major' ]
@@ -143,12 +151,12 @@ if (require.main === module) {
     excludeLabels = excludeLabels.concat(argv['exclude-label'])
   }
 
-  options = { simple, group, excludeLabels, endRef }
+  options = { simple: format === 'simple', group, excludeLabels, endRef }
 
   branchDiff(branch1, branch2, options, (err, list) => {
     if (err)
       throw err
 
-    printCommits(list, simple)
+    printCommits(list, format)
   })
 }
