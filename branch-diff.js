@@ -135,6 +135,9 @@ if (require.main === module) {
     , excludeLabels = []
     , options
 
+  if (argv.version || argv.v)
+    return console.log(`v ${require('./package.json').version}`)
+
   if (argv['patch-only'])
     excludeLabels = [ 'semver-minor', 'semver-major' ]
   if (argv['exclude-label']) {

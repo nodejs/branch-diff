@@ -24,6 +24,7 @@ But the comparison isn't quite as strict, generally leading to a shorter list of
 
 ### Options
 
+* `--version`: Only prints branch-diff's package.json version.
 * `--simple` or `-s`: Don't print full markdown output, good for console printing without the additional fluff.
 * `--group` or `-g`: Group commits by prefix, this uses the part of the commit summary that is usually used in Node.js core to indicate subsystem for example. Groups are made up of numbers, letters, `,` and `-`, followed by a `:`.
 * `--exclude-label`: Exclude any commits from the list that come from a GitHub pull request with the given label. Multiple `--exclude-label` options may be provided, they will also be split by `,`. e.g. `--exclude-label=semver-major,meta`.
