@@ -145,11 +145,15 @@ if (require.main === module) {
     , options
 
 
+  if (argv.version || argv.v)
+    return console.log(`v ${require('./package.json').version}`)
+
   if (argv.simple || argv.s)
     format = 'simple'
 
   if (argv['patch-only'])
     excludeLabels = [ 'semver-minor', 'semver-major' ]
+
   if (argv['exclude-label']) {
     if (!Array.isArray(argv['exclude-label']))
       argv['exclude-label'] = argv['exclude-label'].split(',')
