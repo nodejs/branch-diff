@@ -105,12 +105,14 @@ function diffCollected (options, branchCommits, callback) {
 }
 
 
-function printCommits (list, format) {
+function printCommits (list, format, reverse) {
   if (format === 'sha') {
     list = list.map((commit) => `${commit.sha.substr(0, 10)}`)
   } else {
     list = list.map((commit) => commitToOutput(commit, format === 'simple', ghId))
   }
+  
+  if (reverse) list = list.reverse();
 
   let out = list.join('\n') + '\n'
 
@@ -139,6 +141,7 @@ if (require.main === module) {
     , branch1       = argv._[0]
     , branch2       = argv._[1]
     , format        = argv.format
+    , reverse       = argv.reverse
     , group         = argv.group || argv.g
     , endRef        = argv['end-ref']
     , excludeLabels = []
@@ -174,6 +177,6 @@ if (require.main === module) {
       })
     }
 
-    printCommits(list, format)
+    printCommits(list, format, reverse)
   })
 }
