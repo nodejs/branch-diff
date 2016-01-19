@@ -33,6 +33,7 @@ But the comparison isn't quite as strict, generally leading to a shorter list of
   - `sha`: Print only the 10-character truncated commit shasums. Good for piping though additional tooling, such as `xargs git cherry-pick` for applying commits.
 * `--simple` or `-s`: An alias for `--format=simple`.
 * `--filter-release`: Exclude Node-style release commits from the list. e.g. `Working on v1.0.0` or `2015-10-21 Version 2.0.0`.
+* `--reverse`: Reverse the results, this is especially useful when piping output to `xargs`
 
 ## License
 
