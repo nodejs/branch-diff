@@ -13,6 +13,7 @@ const fs             = require('fs')
     , commitToOutput = require('changelog-maker/commit-to-output')
     , collectCommitLabels = require('changelog-maker/collect-commit-labels')
     , groupCommits   = require('changelog-maker/group-commits')
+    , isReleaseCommit = require('changelog-maker/groups').isReleaseCommit
     , gitexec        = require('gitexec')
 
     , pkgFile        = path.join(process.cwd(), 'package.json')
@@ -111,7 +112,7 @@ function printCommits (list, format, reverse) {
   } else {
     list = list.map((commit) => commitToOutput(commit, format === 'simple', ghId))
   }
-  
+
   if (reverse) list = list.reverse();
 
   let out = list.join('\n') + '\n'
@@ -169,13 +170,8 @@ if (require.main === module) {
     if (err)
       throw err
 
-    if (argv['filter-release']) {
-      list = list.filter((commit) => {
-        return !(/^Working on v?\d{1,2}\.\d{1,3}\.\d{1,3}$/.test(commit.summary)
-              || /^\d{4}-\d{2}-\d{2},? Version \d{1,2}\.\d{1,3}\.\d{1,3} ("[A-Za-z ]+" )?\((Stable|LTS|Maintenance)\)/.test(commit.summary)
-              || /^\d{4}-\d{2}-\d{2},? io.js v\d{1,2}\.\d{1,3}\.\d{1,3} Release/.test(commit.summary))
-      })
-    }
+    if (argv['filter-release'])
+      list = list.filter((commit) => !isReleaseCommit(commit.summary))
 
     printCommits(list, format, reverse)
   })

@@ -11,7 +11,7 @@
   "dependencies": {
     "bl": "~1.0.0",
     "chalk": "~1.1.1",
-    "changelog-maker": "~2.1.1",
+    "changelog-maker": "~2.2.0",
     "commit-stream": "~1.0.1",
     "deep-equal": "~1.0.1",
     "gitexec": "~1.0.0",
