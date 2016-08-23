@@ -2,8 +2,8 @@
 
 **A tool to list print the commits on one git branch that are not on another using loose comparison**
 
-[![npm](https://nodei.co/npm/changelog-maker.png?downloads=true&downloadRank=true)](https://nodei.co/npm/changelog-maker/)
-[![npm](https://nodei.co/npm-dl/changelog-maker.png?months=6&height=3)](https://nodei.co/npm/changelog-maker/)
+[![npm](https://nodei.co/npm/branch-diff.png?downloads=true&downloadRank=true)](https://nodei.co/npm/branch-diff/)
+[![npm](https://nodei.co/npm-dl/branch-diff.png?months=6&height=3)](https://nodei.co/npm/branch-diff/)
 
 ## Usage
 
