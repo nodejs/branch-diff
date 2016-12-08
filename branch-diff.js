@@ -98,6 +98,14 @@ function diffCollected (options, branchCommits, callback) {
       })
     }
 
+    if (options.requireLabels) {
+      list = list.filter((commit) => {
+        return commit.labels && commit.labels.some((label) => {
+          return options.requireLabels.indexOf(label) >= 0
+        })
+      })
+    }
+
     if (options.group)
       list = groupCommits(list)
 
@@ -146,6 +154,7 @@ if (require.main === module) {
     , group         = argv.group || argv.g
     , endRef        = argv['end-ref']
     , excludeLabels = []
+    , requireLabels = []
     , options
 
 
@@ -164,7 +173,19 @@ if (require.main === module) {
     excludeLabels = excludeLabels.concat(argv['exclude-label'])
   }
 
-  options = { simple: format === 'simple', group, excludeLabels, endRef }
+  if (argv['require-label']) {
+    if (!Array.isArray(argv['require-label']))
+      argv['require-label'] = argv['require-label'].split(',')
+    requireLabels = requireLabels.concat(argv['require-label'])
+  }
+
+  options = {
+    simple: format === 'simple',
+    group,
+    excludeLabels,
+    requireLabels,
+    endRef
+  }
 
   branchDiff(branch1, branch2, options, (err, list) => {
     if (err)

@@ -27,6 +27,7 @@ But the comparison isn't quite as strict, generally leading to a shorter list of
 * `--version`: Only prints branch-diff's package.json version.
 * `--group` or `-g`: Group commits by prefix, this uses the part of the commit summary that is usually used in Node.js core to indicate subsystem for example. Groups are made up of numbers, letters, `,` and `-`, followed by a `:`.
 * `--exclude-label`: Exclude any commits from the list that come from a GitHub pull request with the given label. Multiple `--exclude-label` options may be provided, they will also be split by `,`. e.g. `--exclude-label=semver-major,meta`.
+* `--require-label`: Only include commits in the list that come from a GitHub pull request with the given label. Multiple `--require-label` options may be provided, they will also be split by `,`. e.g. `--require-label=test,doc`.
 * `--patch-only`: An alias for `--exclude-label=semver-major,semver-minor`.
 * `--format`: Dictates what formatting the output will have. Possible options are: `simple`, `sha`. The default is to print markdown-formatted output.
   - `simple`: Don't print full markdown output, good for console printing without the additional fluff.
