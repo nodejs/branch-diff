@@ -112,6 +112,8 @@ function printCommits (list, format, reverse) {
   } else {
     list = list.map((commit) => commitToOutput(commit, format === 'simple', ghId))
   }
+  
+  if (reverse) list = list.reverse();
 
   if (reverse) list = list.reverse();
 
