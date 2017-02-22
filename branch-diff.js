@@ -43,11 +43,13 @@ function branchDiff (branch1, branch2, options, callback) {
   let repoPath = options.repoPath || process.cwd()
 
   findMergeBase(repoPath, branch1, branch2, (err, commit) => {
+    if (err)
+      return callback(err)
     map(
         [ branch1, branch2 ], (branch, callback) => {
           collect(repoPath, branch, commit, branch == branch2 && options.endRef).pipe(listStream.obj(callback))
         }
-      , (err, branchCommits) => diffCollected(options, branchCommits, callback)
+      , (err, branchCommits) => err ? callback(err) : diffCollected(options, branchCommits, callback)
     )
   })
 }
@@ -90,7 +92,7 @@ function diffCollected (options, branchCommits, callback) {
     if (err)
       return callback(err)
 
-    if (options.excludeLabels) {
+    if (options.excludeLabels.length > 0) {
       list = list.filter((commit) => {
         return !commit.labels || !commit.labels.some((label) => {
           return options.excludeLabels.indexOf(label) >= 0
@@ -98,7 +100,7 @@ function diffCollected (options, branchCommits, callback) {
       })
     }
 
-    if (options.requireLabels) {
+    if (options.requireLabels.length > 0) {
       list = list.filter((commit) => {
         return commit.labels && commit.labels.some((label) => {
           return options.requireLabels.indexOf(label) >= 0
