@@ -9,18 +9,18 @@
   "author": "Rod <rod@vagg.org> (http://r.va.gg/)",
   "license": "MIT",
   "dependencies": {
-    "bl": "~1.0.0",
-    "chalk": "~1.1.1",
+    "bl": "~1.2.0",
+    "chalk": "~1.1.3",
     "changelog-maker": "~2.2.0",
-    "commit-stream": "~1.0.1",
+    "commit-stream": "~1.0.2",
     "deep-equal": "~1.0.1",
     "gitexec": "~1.0.0",
     "list-stream": "~1.0.1",
     "map-async": "~0.1.1",
     "minimist": "~1.2.0",
-    "pkg-to-id": "0.0.3",
-    "split2": "~1.1.1",
-    "through2": "~2.0.0"
+    "pkg-to-id": "~0.0.3",
+    "split2": "~2.1.1",
+    "through2": "~2.0.3"
   },
   "repository": {
     "type": "git",
