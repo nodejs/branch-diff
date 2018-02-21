@@ -17,4 +17,3 @@ parts:
     source: .
     plugin: nodejs
     stage-packages: [git]
-    build-packages: [zlib1g-dev]
