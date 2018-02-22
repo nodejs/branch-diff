@@ -1,0 +1,19 @@
+name: branch-diff
+version: git
+summary: Compares 2 git branches without hassle.
+description: |
+    A tool to list print the commits on one git branch
+    that are not on another using loose comparison.
+grade: stable
+confinement: strict
+
+apps:
+  branch-diff:
+    command: bin/branch-diff
+    plugs: [network, home]
+
+parts:
+  branch-diff:
+    source: .
+    plugin: nodejs
+    stage-packages: [git]
