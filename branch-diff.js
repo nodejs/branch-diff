@@ -86,35 +86,56 @@ function diffCollected (options, branchCommits, callback) {
     })
   }
 
-  let list = branchCommits[1].filter((commit) => !isInList(commit))
+  const list = branchCommits[1].filter((commit) => !isInList(commit))
+  let start = 0
+  const chunkSize = 500
+  let end = start + chunkSize
+ 
+  let filtered = []
+  let sublist = list.slice(start, end)
 
-  collectCommitLabels(list, (err) => {
-    if (err)
-      return callback(err)
-
-    if (options.excludeLabels.length > 0) {
-      list = list.filter((commit) => {
-        return !commit.labels || !commit.labels.some((label) => {
-          return options.excludeLabels.indexOf(label) >= 0
-        })
+  if (sublist) {
+    function processCommitChunk () {
+      collectCommitLabels(sublist, (err) => {
+        if (err)
+          return callback(err)
+    
+        if (options.excludeLabels.length > 0) {
+          sublist = sublist.filter((commit) => {
+            return !commit.labels || !commit.labels.some((label) => {
+              return options.excludeLabels.indexOf(label) >= 0
+            })
+          })
+        }
+    
+        if (options.requireLabels.length > 0) {
+          sublist = sublist.filter((commit) => {
+            return commit.labels && commit.labels.some((label) => {
+              return options.requireLabels.indexOf(label) >= 0
+            })
+          })
+        }
+    
+        if (options.group)
+          sublist = groupCommits(sublist)
+    
+        filtered = filtered.concat(sublist)
+        start += chunkSize
+        end += chunkSize
+        
+        sublist = list.slice(start, end)
+        if (sublist.length !== 0) {
+          setTimeout(processCommitChunk, 5000)
+        } else {
+          callback(null, filtered)
+        }
       })
     }
-
-    if (options.requireLabels.length > 0) {
-      list = list.filter((commit) => {
-        return commit.labels && commit.labels.some((label) => {
-          return options.requireLabels.indexOf(label) >= 0
-        })
-      })
-    }
-
-    if (options.group)
-      list = groupCommits(list)
-
-    callback(null, list)
-  })
+    processCommitChunk()
+  } else {
+    callback(null, filtered)
+  }
 }
-
 
 function printCommits (list, format, reverse) {
   if (format === 'sha') {
