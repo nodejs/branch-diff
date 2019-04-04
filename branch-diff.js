@@ -148,7 +148,11 @@ function collect (repoPath, branch, startCommit, endRef) {
 module.exports = branchDiff
 
 if (require.main === module) {
-  let argv          = require('minimist')(process.argv.slice(2))
+  const config = {
+    boolean: ['version', 'group', 'patch-only', 'simple', 'filter-release',
+      'reverse'],
+  };
+  let argv          = require('minimist')(process.argv.slice(2), config)
     , branch1       = argv._[0]
     , branch2       = argv._[1]
     , format        = argv.format
