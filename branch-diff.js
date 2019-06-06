@@ -123,7 +123,8 @@ function printCommits (list, format, reverse) {
     list = list.map((commit) => commitToOutput(commit, format === 'simple', ghId))
   }
 
-  if (reverse) list = list.reverse();
+  if (reverse)
+    list = list.reverse()
 
   let out = list.join('\n') + '\n'
 
@@ -148,11 +149,10 @@ function collect (repoPath, branch, startCommit, endRef) {
 module.exports = branchDiff
 
 if (require.main === module) {
-  const config = {
-    boolean: ['version', 'group', 'patch-only', 'simple', 'filter-release',
-      'reverse'],
-  };
-  let argv          = require('minimist')(process.argv.slice(2), config)
+  let minimistConfig = {
+        boolean: [ 'version', 'group', 'patch-only', 'simple', 'filter-release', 'reverse' ]
+      }
+    , argv          = require('minimist')(process.argv.slice(2), minimistConfig)
     , branch1       = argv._[0]
     , branch2       = argv._[1]
     , format        = argv.format
