@@ -24,8 +24,9 @@ const fs             = require('fs')
     , gitcmd         = 'git log {{startCommit}}..{{branch}} --until="{{untilcmd}}"'
     , ghId           = {
           user: pkgId.user || 'nodejs'
-        , name: pkgId.name || 'node'
+        , repo: pkgId.name || 'node'
       }
+    , defaultCommitUrl = 'https://github.com/{ghUser}/{ghRepo}/commit/{ref}'
 
 
 function replace (s, m) {
@@ -116,11 +117,11 @@ function diffCollected (options, branchCommits, callback) {
 }
 
 
-function printCommits (list, format, reverse) {
+function printCommits (list, format, reverse, commitUrl) {
   if (format === 'sha') {
     list = list.map((commit) => `${commit.sha.substr(0, 10)}`)
   } else {
-    list = list.map((commit) => commitToOutput(commit, format === 'simple', ghId))
+    list = list.map((commit) => commitToOutput(commit, format === 'simple', ghId, commitUrl))
   }
 
   if (reverse)
@@ -142,7 +143,7 @@ function collect (repoPath, branch, startCommit, endRef) {
 
   return gitexec.exec(repoPath, _gitcmd)
     .pipe(split2())
-    .pipe(commitStream(ghId.user, ghId.name))
+    .pipe(commitStream(ghId.user, ghId.repo))
 }
 
 
@@ -159,6 +160,7 @@ if (require.main === module) {
     , reverse       = argv.reverse
     , group         = argv.group || argv.g
     , endRef        = argv['end-ref']
+    , commitUrl     = argv['commit-url'] || defaultCommitUrl
     , excludeLabels = []
     , requireLabels = []
     , options
@@ -200,6 +202,6 @@ if (require.main === module) {
     if (argv['filter-release'])
       list = list.filter((commit) => !isReleaseCommit(commit.summary))
 
-    printCommits(list, format, reverse)
+    printCommits(list, format, reverse, commitUrl)
   })
 }

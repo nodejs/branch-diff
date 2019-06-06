@@ -35,6 +35,7 @@ But the comparison isn't quite as strict, generally leading to a shorter list of
 * `--simple` or `-s`: An alias for `--format=simple`.
 * `--filter-release`: Exclude Node-style release commits from the list. e.g. `Working on v1.0.0` or `2015-10-21 Version 2.0.0`.
 * `--reverse`: Reverse the results, this is especially useful when piping output to `xargs`
+* `--commit-url`:A URL template which will be used to generate commit URLs for a repository not hosted in GitHub. `{ref}` is the placeholder that will be replaced with the commit, i.e. `--commit-url=https://gitlab.com/myUser/myRepo/commit/{ref}`. `{ghUser}` and `{ghRepo}` are available if they can be derived from package.json (Gitlab and Bitbucket URLs should be understood in package.json).
 
 ## License
 
