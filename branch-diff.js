@@ -8,7 +8,7 @@ const fs             = require('fs')
     , split2         = require('split2')
     , listStream     = require('list-stream')
     , pkgtoId        = require('pkg-to-id')
-    , chalk          = require('chalk')
+    , stripAnsi      = require('strip-ansi')
     , map            = require('map-async')
     , commitToOutput = require('changelog-maker/commit-to-output')
     , collectCommitLabels = require('changelog-maker/collect-commit-labels')
@@ -130,7 +130,7 @@ function printCommits (list, format, reverse, commitUrl) {
   let out = list.join('\n') + '\n'
 
   if (!process.stdout.isTTY)
-    out = chalk.stripColor(out)
+    out = stripAnsi(out)
 
   process.stdout.write(out)
 }
