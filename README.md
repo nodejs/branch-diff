@@ -29,7 +29,7 @@ But the comparison isn't quite as strict, generally leading to a shorter list of
 * `--exclude-label`: Exclude any commits from the list that come from a GitHub pull request with the given label. Multiple `--exclude-label` options may be provided, they will also be split by `,`. e.g. `--exclude-label=semver-major,meta`.
 * `--require-label`: Only include commits in the list that come from a GitHub pull request with the given label. Multiple `--require-label` options may be provided, they will also be split by `,`. e.g. `--require-label=test,doc`.
 * `--patch-only`: An alias for `--exclude-label=semver-major,semver-minor`.
-* `--format`: Dictates what formatting the output will have. Possible options are: `simple`, `sha`. The default is to print markdown-formatted output.
+* `--format`: Dictates what formatting the output will have. Possible options are: `simple`, `plaintext`, and `sha`. The default is to print markdown-formatted output; `plaintext` also implies that commits will be grouped.
   - `simple`: Don't print full markdown output, good for console printing without the additional fluff.
   - `sha`: Print only the 10-character truncated commit shasums. Good for piping though additional tooling, such as `xargs git cherry-pick` for applying commits.
 * `--simple` or `-s`: An alias for `--format=simple`.
