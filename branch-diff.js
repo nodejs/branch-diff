@@ -10,10 +10,10 @@ const fs             = require('fs')
     , pkgtoId        = require('pkg-to-id')
     , stripAnsi      = require('strip-ansi')
     , map            = require('map-async')
-    , commitToOutput = require('changelog-maker/commit-to-output')
+    , { commitToOutput } = require('changelog-maker/commit-to-output')
     , collectCommitLabels = require('changelog-maker/collect-commit-labels')
     , groupCommits   = require('changelog-maker/group-commits')
-    , isReleaseCommit = require('changelog-maker/groups').isReleaseCommit
+    , { isReleaseCommit, toGroups } = require('changelog-maker/groups')
     , gitexec        = require('gitexec')
 
     , pkgFile        = path.join(process.cwd(), 'package.json')
@@ -28,7 +28,22 @@ const fs             = require('fs')
       }
     , defaultCommitUrl = 'https://github.com/{ghUser}/{ghRepo}/commit/{ref}'
 
+const formatType = {
+  PLAINTEXT: 'plaintext',
+  MARKDOWN: 'markdown',
+  SIMPLE: 'simple',
+  SHA: 'sha'
+}
 
+const getFormat = (argv) => {
+  if (argv.format && Object.values(formatType).includes(argv.format)) {
+    return argv.format
+  } else if (argv.simple || argv.s) {
+    return formatType.SIMPLE
+  }
+  return formatType.MARKDOWN
+}
+  
 function replace (s, m) {
   Object.keys(m).forEach(function (k) {
     s = s.replace(new RegExp('\\{\\{' + k + '\\}\\}', 'g'), m[k])
@@ -116,12 +131,28 @@ function diffCollected (options, branchCommits, callback) {
   })
 }
 
-
 function printCommits (list, format, reverse, commitUrl) {
-  if (format === 'sha') {
+  if (format === formatType.SHA) {
     list = list.map((commit) => `${commit.sha.substr(0, 10)}`)
+  } else if (format === formatType.SIMPLE) {
+    list = list.map((commit) => commitToOutput(commit, formatType.SIMPLE, ghId, commitUrl))
+  } else if (format === formatType.PLAINTEXT) {
+    // Plaintext format implies grouping.
+    list = groupCommits(list)
+
+    const formatted = []
+    let currentGroup
+    for (const commit of list) {
+      const commitGroup = toGroups(commit.summary)
+      if (currentGroup !== commitGroup) {
+        formatted.push(`${commitGroup}:`)
+        currentGroup = commitGroup
+      }
+      formatted.push(commitToOutput(commit, formatType.PLAINTEXT, ghId, commitUrl))
+    }
+    list = formatted
   } else {
-    list = list.map((commit) => commitToOutput(commit, format === 'simple', ghId, commitUrl))
+    list = list.map((commit) => commitToOutput(commit, formatType.MARKDOWN, ghId, commitUrl))
   }
 
   if (reverse)
@@ -156,7 +187,6 @@ if (require.main === module) {
     , argv          = require('minimist')(process.argv.slice(2), minimistConfig)
     , branch1       = argv._[0]
     , branch2       = argv._[1]
-    , format        = argv.format
     , reverse       = argv.reverse
     , group         = argv.group || argv.g
     , endRef        = argv['end-ref']
@@ -165,12 +195,10 @@ if (require.main === module) {
     , requireLabels = []
     , options
 
+  const format = getFormat(argv)
 
   if (argv.version || argv.v)
     return console.log(`v ${require('./package.json').version}`)
-
-  if (argv.simple || argv.s)
-    format = 'simple'
 
   if (argv['patch-only'])
     excludeLabels = [ 'semver-minor', 'semver-major' ]
@@ -188,7 +216,6 @@ if (require.main === module) {
   }
 
   options = {
-    simple: format === 'simple',
     group,
     excludeLabels,
     requireLabels,

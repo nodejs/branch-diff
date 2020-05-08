@@ -10,7 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "bl": "~3.0.0",
-    "changelog-maker": "~2.3.0",
+    "changelog-maker": "~2.4.0",
     "commit-stream": "~1.1.0",
     "deep-equal": "~1.0.1",
     "gitexec": "~1.0.0",
