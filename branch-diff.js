@@ -177,12 +177,23 @@ function collect (repoPath, branch, startCommit, endRef) {
     .pipe(commitStream(ghId.user, ghId.repo))
 }
 
+function showUsage () {
+  var usage = fs.readFileSync(path.join(__dirname, 'README.md'), 'utf8')
+    .replace(/[\s\S]+(## Usage\n[\s\S]*)\n## [\s\S]+/m, '$1')
+  if (process.stdout.isTTY) {
+    usage = usage
+      .replace(/## Usage\n[\s]*/m, '')
+      .replace(/\*\*/g, '')
+      .replace(/`/g, '')
+  }
+  process.stdout.write(usage)
+}
 
 module.exports = branchDiff
 
 if (require.main === module) {
   let minimistConfig = {
-        boolean: [ 'version', 'group', 'patch-only', 'simple', 'filter-release', 'reverse' ]
+        boolean: [ 'version', 'group', 'patch-only', 'simple', 'filter-release', 'reverse' ,'help']
       }
     , argv          = require('minimist')(process.argv.slice(2), minimistConfig)
     , branch1       = argv._[0]
@@ -213,6 +224,11 @@ if (require.main === module) {
     if (!Array.isArray(argv['require-label']))
       argv['require-label'] = argv['require-label'].split(',')
     requireLabels = requireLabels.concat(argv['require-label'])
+  }
+
+  if (argv['help']) {
+    showUsage();
+    process.exit(0);
   }
 
   options = {
