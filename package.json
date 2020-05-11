@@ -6,6 +6,10 @@
   "bin": {
     "branch-diff": "./branch-diff.js"
   },
+  "scripts": {
+    "lint": "standard",
+    "format": "standard --fix"
+  },
   "author": "Rod <rod@vagg.org> (http://r.va.gg/)",
   "license": "MIT",
   "dependencies": {
@@ -26,5 +30,8 @@
     "type": "git",
     "url": "https://github.com/rvagg/branch-diff.git"
   },
-  "preferGlobal": true
+  "preferGlobal": true,
+  "devDependencies": {
+    "standard": "^14.3.3"
+  }
 }
