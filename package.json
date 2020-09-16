@@ -14,8 +14,8 @@
   "license": "MIT",
   "dependencies": {
     "bl": "^4.0.3",
-    "changelog-maker": "^2.4.2",
-    "commit-stream": "~1.1.0",
+    "changelog-maker": "^2.5.0",
+    "commit-stream": "^1.1.0",
     "deep-equal": "^2.0.3",
     "gitexec": "^2.0.1",
     "list-stream": "^2.0.0",
@@ -32,6 +32,6 @@
   },
   "preferGlobal": true,
   "devDependencies": {
-    "standard": "^14.3.3"
+    "standard": "^14.3.4"
   }
 }
