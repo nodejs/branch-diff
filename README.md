@@ -18,7 +18,7 @@ The output is the same as [changelog-maker](https://github.com/rvagg/changelog-m
 
 The commit list is very close to running:
 
-`$ git log master..next`
+`$ git log main..next`
 
 But the comparison isn't quite as strict, generally leading to a shorter list of commits.
 
