@@ -1,0 +1,77 @@
+name: Test & Maybe Release
+on: [push, pull_request]
+jobs:
+  test:
+    name: Node ${{ matrix.node }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [12, 14, 16]
+        # windows support not quite ready: os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - run: git fetch --prune --unshallow
+
+      - name: Set Node.js version
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - run: node --version
+      - run: npm --version
+      - run: git --version
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+  release:
+    name: Release
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.3.4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2.4.0
+        with:
+          node-version: 14
+
+      - name: Install dependencies
+        run: |
+          npm install --no-progress --no-package-lock --no-save
+
+      - name: Build
+        run: |
+          npm run build
+
+      - name: Install plugins
+        run: |
+          npm install \
+            @semantic-release/commit-analyzer \
+            conventional-changelog-conventionalcommits \
+            @semantic-release/release-notes-generator \
+            @semantic-release/npm \
+            @semantic-release/github \
+            @semantic-release/git \
+            @semantic-release/changelog \
+            --no-progress --no-package-lock --no-save
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx semantic-release
