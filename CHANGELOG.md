@@ -1,3 +1,10 @@
+### [1.10.2](https://github.com/rvagg/branch-diff/compare/v1.10.1...v1.10.2) (2021-10-15)
+
+
+### Trivial Changes
+
+* **deps:** bump split2 from 3.2.2 to 4.0.0 ([#35](https://github.com/rvagg/branch-diff/issues/35)) ([7281e09](https://github.com/rvagg/branch-diff/commit/7281e09090e6475019e1a5616f8819f5840ec928))
+
 ### [1.10.1](https://github.com/rvagg/branch-diff/compare/v1.10.0...v1.10.1) (2021-10-14)
 
 
