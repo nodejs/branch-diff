@@ -24,7 +24,7 @@
     "minimist": "^1.2.5",
     "pkg-to-id": "0.0.3",
     "split2": "^4.0.0",
-    "strip-ansi": "^6.0.0",
+    "strip-ansi": "^7.0.1",
     "through2": "^4.0.2"
   },
   "repository": {
