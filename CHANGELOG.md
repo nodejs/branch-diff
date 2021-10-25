@@ -1,3 +1,11 @@
+### [1.10.4](https://github.com/rvagg/branch-diff/compare/v1.10.3...v1.10.4) (2021-10-25)
+
+
+### Trivial Changes
+
+* **deps:** bump changelog-maker from 2.7.1 to 2.7.2 ([766dbb9](https://github.com/rvagg/branch-diff/commit/766dbb9884cdb485d3537fc568df8c07318554d0))
+* **deps:** bump split2 from 4.0.0 to 4.1.0 ([a714f13](https://github.com/rvagg/branch-diff/commit/a714f13e551352ee5cf3d036e3a7853da41d382c))
+
 ### [1.10.3](https://github.com/rvagg/branch-diff/compare/v1.10.2...v1.10.3) (2021-10-18)
 
 
