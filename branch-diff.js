@@ -1,21 +1,19 @@
 #!/usr/bin/env node
 
-'use strict'
+import fs from 'fs'
+import path from 'path'
+import process from 'process'
+import { pipeline as _pipeline } from 'stream'
+import { promisify } from 'util'
+import commitStream from 'commit-stream'
+import split2 from 'split2'
+import pkgtoId from 'pkg-to-id'
+import minimist from 'minimist'
+import { isReleaseCommit } from 'changelog-maker/groups'
+import { processCommits } from 'changelog-maker/process-commits'
+import gitexec from 'gitexec'
 
-const fs = require('fs')
-const path = require('path')
-const commitStream = require('commit-stream')
-const split2 = require('split2')
-const listStream = require('list-stream')
-const pkgtoId = require('pkg-to-id')
-const stripAnsi = require('strip-ansi')
-const map = require('map-async')
-const { commitToOutput } = require('changelog-maker/commit-to-output')
-const collectCommitLabels = require('changelog-maker/collect-commit-labels')
-const groupCommits = require('changelog-maker/group-commits')
-const { isReleaseCommit, toGroups } = require('changelog-maker/groups')
-const gitexec = require('gitexec')
-
+const pipeline = promisify(_pipeline)
 const pkgFile = path.join(process.cwd(), 'package.json')
 const pkgData = fs.existsSync(pkgFile) ? require(pkgFile) : {}
 const pkgId = pkgtoId(pkgData)
@@ -26,23 +24,6 @@ const ghId = {
   user: pkgId.user || 'nodejs',
   repo: pkgId.name || 'node'
 }
-const defaultCommitUrl = 'https://github.com/{ghUser}/{ghRepo}/commit/{ref}'
-
-const formatType = {
-  PLAINTEXT: 'plaintext',
-  MARKDOWN: 'markdown',
-  SIMPLE: 'simple',
-  SHA: 'sha'
-}
-
-const getFormat = (argv) => {
-  if (argv.format && Object.values(formatType).includes(argv.format)) {
-    return argv.format
-  } else if (argv.simple || argv.s) {
-    return formatType.SIMPLE
-  }
-  return formatType.MARKDOWN
-}
 
 function replace (s, m) {
   Object.keys(m).forEach(function (k) {
@@ -51,37 +32,26 @@ function replace (s, m) {
   return s
 }
 
-function branchDiff (branch1, branch2, options, callback) {
+export async function branchDiff (branch1, branch2, options) {
   if (!branch1 || !branch2) {
-    return callback(new Error('Must supply two branch names to compare'))
+    throw new Error('Must supply two branch names to compare')
   }
 
   const repoPath = options.repoPath || process.cwd()
-
-  findMergeBase(repoPath, branch1, branch2, (err, commit) => {
-    if (err) { return callback(err) }
-    map(
-      [branch1, branch2], (branch, callback) => {
-        collect(repoPath, branch, commit, branch === branch2 && options.endRef).pipe(listStream.obj(callback))
-      }
-      , (err, branchCommits) => err ? callback(err) : diffCollected(options, branchCommits, callback)
-    )
-  })
+  const commit = await findMergeBase(repoPath, branch1, branch2)
+  const branchCommits = await Promise.all([branch1, branch2].map(async (branch) => {
+    return collect(repoPath, branch, commit, branch === branch2 && options.endRef)
+  }))
+  return await diffCollected(options, branchCommits)
 }
 
-function findMergeBase (repoPath, branch1, branch2, callback) {
+async function findMergeBase (repoPath, branch1, branch2) {
   const gitcmd = `git merge-base ${branch1} ${branch2}`
-
-  gitexec.execCollect(repoPath, gitcmd, (err, data) => {
-    if (err) {
-      return callback(err)
-    }
-
-    callback(null, data.substr(0, 10))
-  })
+  const data = await promisify(gitexec.execCollect)(repoPath, gitcmd)
+  return data.substr(0, 10)
 }
 
-function diffCollected (options, branchCommits, callback) {
+async function diffCollected (options, branchCommits) {
   function isInList (commit) {
     return branchCommits[0].some((c) => {
       if (commit.sha === c.sha) { return true }
@@ -102,101 +72,54 @@ function diffCollected (options, branchCommits, callback) {
 
   let list = branchCommits[1].filter((commit) => !isInList(commit))
 
-  collectCommitLabels(list, (err) => {
-    if (err) {
-      return callback(err)
-    }
-
-    if (options.excludeLabels.length > 0) {
-      list = list.filter((commit) => {
-        return !commit.labels || !commit.labels.some((label) => {
-          return options.excludeLabels.indexOf(label) >= 0
-        })
+  if (options.excludeLabels.length > 0) {
+    list = list.filter((commit) => {
+      return !commit.labels || !commit.labels.some((label) => {
+        return options.excludeLabels.indexOf(label) >= 0
       })
-    }
-
-    if (options.requireLabels.length > 0) {
-      list = list.filter((commit) => {
-        return commit.labels && commit.labels.some((label) => {
-          return options.requireLabels.indexOf(label) >= 0
-        })
-      })
-    }
-
-    if (options.group) {
-      list = groupCommits(list)
-    }
-
-    callback(null, list)
-  })
-}
-
-function printCommits (list, format, reverse, commitUrl) {
-  if (format === formatType.SHA) {
-    list = list.map((commit) => `${commit.sha.substr(0, 10)}`)
-  } else if (format === formatType.SIMPLE) {
-    list = list.map((commit) => commitToOutput(commit, formatType.SIMPLE, ghId, commitUrl))
-  } else if (format === formatType.PLAINTEXT) {
-    // Plaintext format implies grouping.
-    list = groupCommits(list)
-
-    const formatted = []
-    let currentGroup
-    for (const commit of list) {
-      const commitGroup = toGroups(commit.summary)
-      if (currentGroup !== commitGroup) {
-        formatted.push(`${commitGroup}:`)
-        currentGroup = commitGroup
-      }
-      formatted.push(commitToOutput(commit, formatType.PLAINTEXT, ghId, commitUrl))
-    }
-    list = formatted
-  } else {
-    list = list.map((commit) => {
-      return commitToOutput(commit, formatType.MARKDOWN, ghId, commitUrl)
     })
   }
 
-  if (reverse) {
-    list = list.reverse()
+  if (options.requireLabels.length > 0) {
+    list = list.filter((commit) => {
+      return commit.labels && commit.labels.some((label) => {
+        return options.requireLabels.indexOf(label) >= 0
+      })
+    })
   }
 
-  let out = list.join('\n') + '\n'
-
-  if (!process.stdout.isTTY) {
-    out = stripAnsi(out)
-  }
-
-  process.stdout.write(out)
+  return list
 }
 
-function collect (repoPath, branch, startCommit, endRef) {
+async function collect (repoPath, branch, startCommit, endRef) {
   const endrefcmd = endRef && replace(refcmd, { ref: endRef })
   const untilcmd = endRef ? replace(commitdatecmd, { refcmd: endrefcmd }) : ''
   const _gitcmd = replace(gitcmd, { branch, startCommit, untilcmd })
 
-  return gitexec.exec(repoPath, _gitcmd)
-    .pipe(split2())
-    .pipe(commitStream(ghId.user, ghId.repo))
+  const commitList = []
+  await pipeline(
+    gitexec.exec(repoPath, _gitcmd),
+    split2(),
+    commitStream(ghId.user, ghId.repo),
+    async function * (source) {
+      for await (const commit of source) {
+        commitList.push(commit)
+      }
+    })
+  return commitList
 }
 
-module.exports = branchDiff
-
-function main () {
+async function main () {
   const minimistConfig = {
     boolean: ['version', 'group', 'patch-only', 'simple', 'filter-release', 'reverse']
   }
-  const argv = require('minimist')(process.argv.slice(2), minimistConfig)
+  const argv = minimist(process.argv.slice(2), minimistConfig)
   const branch1 = argv._[0]
   const branch2 = argv._[1]
-  const reverse = argv.reverse
   const group = argv.group || argv.g
   const endRef = argv['end-ref']
-  const commitUrl = argv['commit-url'] || defaultCommitUrl
   let excludeLabels = []
   let requireLabels = []
-
-  const format = getFormat(argv)
 
   if (argv.version || argv.v) {
     return console.log(`v ${require('./package.json').version}`)
@@ -227,17 +150,15 @@ function main () {
     endRef
   }
 
-  branchDiff(branch1, branch2, options, (err, list) => {
-    if (err) { throw err }
+  let list = await branchDiff(branch1, branch2, options)
+  if (argv['filter-release']) {
+    list = list.filter((commit) => !isReleaseCommit(commit.summary))
+  }
 
-    if (argv['filter-release']) {
-      list = list.filter((commit) => !isReleaseCommit(commit.summary))
-    }
-
-    printCommits(list, format, reverse, commitUrl)
-  })
+  await processCommits(argv, ghId, list)
 }
 
-if (require.main === module) {
-  main()
-}
+main().catch((err) => {
+  console.error(err)
+  process.exit(1)
+})
