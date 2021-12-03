@@ -7,7 +7,7 @@
 
 ## Usage
 
-**`$ branch-diff [--simple] [--group] [--patch-only] base-branch comparison-branch`**
+**`$ branch-diff [--sha] [--plaintext] [--markdown] [--group] [--reverse] [--patch-only] base-branch comparison-branch`**
 
 A commit is considered to be in the comparison-branch but not in the base-branch if:
 
@@ -29,12 +29,16 @@ But the comparison isn't quite as strict, generally leading to a shorter list of
 * `--exclude-label`: Exclude any commits from the list that come from a GitHub pull request with the given label. Multiple `--exclude-label` options may be provided, they will also be split by `,`. e.g. `--exclude-label=semver-major,meta`.
 * `--require-label`: Only include commits in the list that come from a GitHub pull request with the given label. Multiple `--require-label` options may be provided, they will also be split by `,`. e.g. `--require-label=test,doc`.
 * `--patch-only`: An alias for `--exclude-label=semver-major,semver-minor`.
-* `--format`: Dictates what formatting the output will have. Possible options are: `simple`, `plaintext`, and `sha`. The default is to print markdown-formatted output; `plaintext` also implies that commits will be grouped.
+* `--format`: Dictates what formatting the output will have. Possible options are: `simple`, `markdown`, `plaintext`, and `sha`. The default is to print a `simple` output suitable for stdout.
   - `simple`: Don't print full markdown output, good for console printing without the additional fluff.
-  - `sha`: Print only the 10-character truncated commit shasums. Good for piping though additional tooling, such as `xargs git cherry-pick` for applying commits.
-* `--simple` or `-s`: An alias for `--format=simple`.
+  - `sha`: Print only the 10-character truncated commit hashes. Good for piping though additional tooling, such as `xargs git cherry-pick` for applying commits.
+  - `plaintext`: A very simple form, without commit details, implies `--group`.
+  - `markdown`: A Markdown formatted from, with links and proper escaping.
+* `--sha`: Same as `--format=sha`.
+* `--plaintext`: Same as `--format=plaintext`.
+* `--markdown`: Same as `--format=markdown`.
 * `--filter-release`: Exclude Node-style release commits from the list. e.g. `Working on v1.0.0` or `2015-10-21 Version 2.0.0`.
-* `--reverse`: Reverse the results, this is especially useful when piping output to `xargs`
+* `--reverse`: Reverse the results, this is especially useful when piping output to `xargs`.
 * `--commit-url`:A URL template which will be used to generate commit URLs for a repository not hosted in GitHub. `{ref}` is the placeholder that will be replaced with the commit, i.e. `--commit-url=https://gitlab.com/myUser/myRepo/commit/{ref}`. `{ghUser}` and `{ghRepo}` are available if they can be derived from package.json (Gitlab and Bitbucket URLs should be understood in package.json).
 
 ## License

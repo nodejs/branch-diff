@@ -3,6 +3,7 @@
   "version": "1.10.5",
   "description": "A tool to list print the commits on one git branch that are not on another using loose comparison",
   "main": "branch-diff.js",
+  "type": "module",
   "bin": {
     "branch-diff": "./branch-diff.js"
   },
@@ -14,18 +15,12 @@
   "author": "Rod <rod@vagg.org> (http://r.va.gg/)",
   "license": "MIT",
   "dependencies": {
-    "bl": "^5.0.0",
-    "changelog-maker": "^2.5.0",
+    "changelog-maker": "^3.0.0",
     "commit-stream": "^1.1.0",
-    "deep-equal": "^2.0.5",
     "gitexec": "^2.0.1",
-    "list-stream": "^2.0.0",
-    "map-async": "^0.1.1",
     "minimist": "^1.2.5",
-    "pkg-to-id": "0.0.3",
-    "split2": "^4.0.0",
-    "strip-ansi": "^6.0.0",
-    "through2": "^4.0.2"
+    "pkg-to-id": "^0.0.3",
+    "split2": "^4.1.0"
   },
   "repository": {
     "type": "git",
@@ -33,7 +28,7 @@
   },
   "preferGlobal": true,
   "devDependencies": {
-    "standard": "^16.0.3"
+    "standard": "^16.0.4"
   },
   "release": {
     "branches": [
