@@ -1,6 +1,6 @@
 {
   "name": "branch-diff",
-  "version": "1.10.5",
+  "version": "2.0.0",
   "description": "A tool to list print the commits on one git branch that are not on another using loose comparison",
   "main": "branch-diff.js",
   "type": "module",

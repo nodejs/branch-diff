@@ -1,3 +1,19 @@
+## [2.0.0](https://github.com/rvagg/branch-diff/compare/v1.10.5...v2.0.0) (2022-01-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* switch to ESM, dedupe more code w/ changelog-maker
+
+### Features
+
+* switch to ESM, dedupe more code w/ changelog-maker ([df17633](https://github.com/rvagg/branch-diff/commit/df176331c82ad9d27d5325ca29b059e89c7abef3))
+
+
+### Trivial Changes
+
+* remove package-lock.json ([55f0487](https://github.com/rvagg/branch-diff/commit/55f0487b714419375b9a8482a677ead822c5104f))
+
 ### [1.10.5](https://github.com/rvagg/branch-diff/compare/v1.10.4...v1.10.5) (2021-11-04)
 
 
