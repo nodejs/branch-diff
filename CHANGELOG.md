@@ -1,3 +1,10 @@
+### [2.0.1](https://github.com/rvagg/branch-diff/compare/v2.0.0...v2.0.1) (2022-02-26)
+
+
+### Trivial Changes
+
+* **deps:** bump actions/setup-node from 2 to 3 ([#46](https://github.com/rvagg/branch-diff/issues/46)) ([221ca14](https://github.com/rvagg/branch-diff/commit/221ca146d683711505724f73e115ffa44ffa72d3))
+
 ## [2.0.0](https://github.com/rvagg/branch-diff/compare/v1.10.5...v2.0.0) (2022-01-18)
 
 
