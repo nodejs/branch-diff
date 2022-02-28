@@ -1,3 +1,10 @@
+### [2.0.2](https://github.com/rvagg/branch-diff/compare/v2.0.1...v2.0.2) (2022-02-28)
+
+
+### Bug Fixes
+
+* require is not defined error ([#47](https://github.com/rvagg/branch-diff/issues/47)) ([be4ec56](https://github.com/rvagg/branch-diff/commit/be4ec5697cccdbfc9e95f602f69fa39015b5d70e))
+
 ### [2.0.1](https://github.com/rvagg/branch-diff/compare/v2.0.0...v2.0.1) (2022-02-26)
 
 
