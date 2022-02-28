@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import fs from 'fs'
+import { createRequire } from 'module'
 import path from 'path'
 import process from 'process'
 import { pipeline as _pipeline } from 'stream'
@@ -15,6 +16,7 @@ import gitexec from 'gitexec'
 
 const pipeline = promisify(_pipeline)
 const pkgFile = path.join(process.cwd(), 'package.json')
+const require = createRequire(import.meta.url)
 const pkgData = fs.existsSync(pkgFile) ? require(pkgFile) : {}
 const pkgId = pkgtoId(pkgData)
 const refcmd = 'git rev-list --max-count=1 {{ref}}'
