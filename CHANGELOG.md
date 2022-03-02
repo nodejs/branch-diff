@@ -1,3 +1,10 @@
+### [2.0.3](https://github.com/rvagg/branch-diff/compare/v2.0.2...v2.0.3) (2022-03-02)
+
+
+### Trivial Changes
+
+* **deps:** bump actions/checkout from 2 to 3 ([#48](https://github.com/rvagg/branch-diff/issues/48)) ([000ceab](https://github.com/rvagg/branch-diff/commit/000ceabf9f142dfd34426654107d8cf7a4f3b4ba))
+
 ### [2.0.2](https://github.com/rvagg/branch-diff/compare/v2.0.1...v2.0.2) (2022-02-28)
 
 
