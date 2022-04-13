@@ -12,6 +12,7 @@ import pkgtoId from 'pkg-to-id'
 import minimist from 'minimist'
 import { isReleaseCommit } from 'changelog-maker/groups'
 import { processCommits } from 'changelog-maker/process-commits'
+import { collectCommitLabels } from 'changelog-maker/collect-commit-labels'
 import gitexec from 'gitexec'
 
 const pipeline = promisify(_pipeline)
@@ -73,6 +74,8 @@ async function diffCollected (options, branchCommits) {
   }
 
   let list = branchCommits[1].filter((commit) => !isInList(commit))
+
+  await collectCommitLabels(list)
 
   if (options.excludeLabels.length > 0) {
     list = list.filter((commit) => {

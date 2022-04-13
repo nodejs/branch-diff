@@ -15,7 +15,7 @@
   "author": "Rod <rod@vagg.org> (http://r.va.gg/)",
   "license": "MIT",
   "dependencies": {
-    "changelog-maker": "^3.0.0",
+    "changelog-maker": "^3.1.0",
     "commit-stream": "^1.1.0",
     "gitexec": "^2.0.1",
     "minimist": "^1.2.5",
