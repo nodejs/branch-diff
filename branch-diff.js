@@ -145,6 +145,14 @@ async function main () {
     requireLabels = requireLabels.concat(argv['require-label'])
   }
 
+  if (argv.user) {
+    ghId.user = argv.user
+  }
+
+  if (argv.repo) {
+    ghId.repo = argv.repo
+  }
+
   const options = {
     group,
     excludeLabels,
