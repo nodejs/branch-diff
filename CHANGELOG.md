@@ -1,3 +1,15 @@
+### [2.0.4](https://github.com/rvagg/branch-diff/compare/v2.0.3...v2.0.4) (2022-05-05)
+
+
+### Bug Fixes
+
+* restore label filtering ([#50](https://github.com/rvagg/branch-diff/issues/50)) ([660a71f](https://github.com/rvagg/branch-diff/commit/660a71ff39d53065c118b5262b1025daadb9641d))
+
+
+### Trivial Changes
+
+* **no-release:** bump standard from 16.0.4 to 17.0.0 ([#52](https://github.com/rvagg/branch-diff/issues/52)) ([a87c38f](https://github.com/rvagg/branch-diff/commit/a87c38f0e2611dc44ef1e73d4df66adbfd5d68a8))
+
 ### [2.0.3](https://github.com/rvagg/branch-diff/compare/v2.0.2...v2.0.3) (2022-03-02)
 
 
