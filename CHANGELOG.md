@@ -1,3 +1,10 @@
+## [2.1.0](https://github.com/rvagg/branch-diff/compare/v2.0.4...v2.1.0) (2022-09-01)
+
+
+### Features
+
+* add --user and --repo options ([#49](https://github.com/rvagg/branch-diff/issues/49)) ([7130ec9](https://github.com/rvagg/branch-diff/commit/7130ec9960faeed0871abee5dd5b03cc14473e47))
+
 ### [2.0.4](https://github.com/rvagg/branch-diff/compare/v2.0.3...v2.0.4) (2022-05-05)
 
 
