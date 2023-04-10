@@ -10,6 +10,8 @@
   "scripts": {
     "lint": "standard",
     "format": "standard --fix",
+    "build": "true",
+    "test:ci": "npm run test",
     "test": "npm run lint"
   },
   "author": "Rod <rod@vagg.org> (http://r.va.gg/)",
