@@ -1,3 +1,15 @@
+## [2.1.1](https://github.com/rvagg/branch-diff/compare/v2.1.0...v2.1.1) (2023-04-10)
+
+
+### Bug Fixes
+
+* update releaser action ([#54](https://github.com/rvagg/branch-diff/issues/54)) ([31a3687](https://github.com/rvagg/branch-diff/commit/31a3687f609693ae8f7acbe8c4a0810ce3d9f52e))
+
+
+### Trivial Changes
+
+* **deps:** bump commit-stream from 1.1.0 to 2.0.1 ([aaf897f](https://github.com/rvagg/branch-diff/commit/aaf897f797598f7991b4f575108dcd446c8c3c5f))
+
 ## [2.1.0](https://github.com/rvagg/branch-diff/compare/v2.0.4...v2.1.0) (2022-09-01)
 
 
