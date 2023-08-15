@@ -1,3 +1,10 @@
+## [2.1.3](https://github.com/rvagg/branch-diff/compare/v2.1.2...v2.1.3) (2023-08-15)
+
+
+### Trivial Changes
+
+* **deps:** bump actions/setup-node from 3.7.0 to 3.8.0 ([465acae](https://github.com/rvagg/branch-diff/commit/465acaed1229ab33e98211754fbbd9ead449f3a0))
+
 ## [2.1.2](https://github.com/rvagg/branch-diff/compare/v2.1.1...v2.1.2) (2023-07-07)
 
 
