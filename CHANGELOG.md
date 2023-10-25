@@ -1,3 +1,11 @@
+## [2.1.5](https://github.com/rvagg/branch-diff/compare/v2.1.4...v2.1.5) (2023-10-25)
+
+
+### Trivial Changes
+
+* **deps:** bump actions/checkout from 3 to 4 ([5159aee](https://github.com/rvagg/branch-diff/commit/5159aee62651cea6d11c8ea9d081887bc57984a3))
+* **deps:** bump actions/setup-node from 3.8.1 to 4.0.0 ([7aee4b2](https://github.com/rvagg/branch-diff/commit/7aee4b2dd229067a8d3546b86565919047e6e660))
+
 ## [2.1.4](https://github.com/rvagg/branch-diff/compare/v2.1.3...v2.1.4) (2023-08-21)
 
 
