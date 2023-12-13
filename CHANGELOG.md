@@ -1,3 +1,14 @@
+## [3.0.0](https://github.com/rvagg/branch-diff/compare/v2.1.5...v3.0.0) (2023-12-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* **deps:** bump changelog-maker from 3.2.7 to 4.0.0 (#61)
+
+### Trivial Changes
+
+* **deps:** bump changelog-maker from 3.2.7 to 4.0.0 ([#61](https://github.com/rvagg/branch-diff/issues/61)) ([11b8dab](https://github.com/rvagg/branch-diff/commit/11b8dabd0f77479c48daf126f70b2b8dda94f07f))
+
 ## [2.1.5](https://github.com/rvagg/branch-diff/compare/v2.1.4...v2.1.5) (2023-10-25)
 
 
