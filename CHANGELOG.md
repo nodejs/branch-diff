@@ -1,3 +1,10 @@
+## [3.0.1](https://github.com/rvagg/branch-diff/compare/v3.0.0...v3.0.1) (2023-12-13)
+
+
+### Tests
+
+* remove 16.x and add 20.x to CI ([8f3fae2](https://github.com/rvagg/branch-diff/commit/8f3fae2050dc54e99a9c05a3bb57eee3ce4fca64))
+
 ## [3.0.0](https://github.com/rvagg/branch-diff/compare/v2.1.5...v3.0.0) (2023-12-13)
 
 
