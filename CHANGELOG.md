@@ -1,3 +1,10 @@
+## [3.0.4](https://github.com/nodejs/branch-diff/compare/v3.0.3...v3.0.4) (2024-02-07)
+
+
+### Trivial Changes
+
+* update repository URL ([#65](https://github.com/nodejs/branch-diff/issues/65)) ([0a3d35d](https://github.com/nodejs/branch-diff/commit/0a3d35d8ae68f57a0d466f212aa23d20a77f8e8d))
+
 ## [3.0.3](https://github.com/rvagg/branch-diff/compare/v3.0.2...v3.0.3) (2024-02-07)
 
 
