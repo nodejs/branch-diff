@@ -27,6 +27,8 @@ const ghId = {
   user: pkgId.user || 'nodejs',
   repo: pkgId.name || 'node'
 }
+const cacheFilename = path.resolve('.branch-diff-cache.json')
+let excludedLabelsCache = new Map()
 
 function replace (s, m) {
   Object.keys(m).forEach(function (k) {
@@ -75,13 +77,21 @@ async function diffCollected (options, branchCommits) {
 
   let list = branchCommits[1].filter((commit) => !isInList(commit))
 
+  list = list.filter((commit) => !excludedLabelsCache.has(commit.sha))
+
   await collectCommitLabels(list)
 
   if (options.excludeLabels.length > 0) {
     list = list.filter((commit) => {
-      return !commit.labels || !commit.labels.some((label) => {
+      const included = !commit.labels || !commit.labels.some((label) => {
         return options.excludeLabels.indexOf(label) >= 0
       })
+      // excluded commits will be stored in a cache to avoid hitting the
+      // GH API again for as long as the cache option is active
+      if (!included) {
+        excludedLabelsCache.set(commit.sha, 1)
+      }
+      return included
     })
   }
 
@@ -156,6 +166,27 @@ async function main () {
     ghId.repo = argv.repo
   }
 
+  if (argv.cache) {
+    let cacheFile
+    try {
+      cacheFile = fs.readFileSync(cacheFilename, 'utf8')
+    } catch (err) {
+      console.log(`No cache file found. A new file:
+${path.resolve(cacheFilename)}
+will be created when completing a successful branch-diff run.
+`)
+    }
+    if (cacheFile) {
+      const cacheData = JSON.parse(cacheFile)
+      const excludedLabels = cacheData.excludedLabels
+      if (excludedLabels && excludedLabels.length >= 0) {
+        excludedLabelsCache = new Map(excludedLabels.map(i => ([i, 1])))
+      } else {
+        console.error('Missing excludedLabels on cache file.')
+      }
+    }
+  }
+
   const options = {
     group,
     excludeLabels,
@@ -169,6 +200,16 @@ async function main () {
   }
 
   await processCommits(argv, ghId, list)
+
+  // only stores to cache on success
+  if (argv.cache) {
+    fs.writeFileSync(
+      cacheFilename,
+      JSON.stringify({
+        excludedLabels: [...excludedLabelsCache.keys()],
+      }, null, 2)
+    )
+  }
 }
 
 main().catch((err) => {
