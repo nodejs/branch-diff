@@ -4,7 +4,7 @@ import fs from 'fs'
 import { createRequire } from 'module'
 import path from 'path'
 import process from 'process'
-import { pipeline as _pipeline } from 'stream'
+import { pipeline } from 'stream/promises'
 import { promisify } from 'util'
 import commitStream from 'commit-stream'
 import split2 from 'split2'
@@ -15,7 +15,6 @@ import { processCommits } from 'changelog-maker/process-commits'
 import { collectCommitLabels } from 'changelog-maker/collect-commit-labels'
 import gitexec from 'gitexec'
 
-const pipeline = promisify(_pipeline)
 const pkgFile = path.join(process.cwd(), 'package.json')
 const require = createRequire(import.meta.url)
 const pkgData = fs.existsSync(pkgFile) ? require(pkgFile) : {}
