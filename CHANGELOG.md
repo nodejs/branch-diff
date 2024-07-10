@@ -1,3 +1,10 @@
+## [3.0.5](https://github.com/nodejs/branch-diff/compare/v3.0.4...v3.0.5) (2024-07-10)
+
+### Trivial Changes
+
+* **deps:** bump actions/setup-node from 4.0.2 to 4.0.3 ([adc2e60](https://github.com/nodejs/branch-diff/commit/adc2e600e2acaa95f1950079e86798c20bde08cf))
+* use `pipeline` from `node:stream/promises` ([70062d4](https://github.com/nodejs/branch-diff/commit/70062d421f14f30c1fc0829e1aa4c6cdb3aac838))
+
 ## [3.0.4](https://github.com/nodejs/branch-diff/compare/v3.0.3...v3.0.4) (2024-02-07)
 
 
