@@ -42,6 +42,7 @@ But the comparison isn't quite as strict, generally leading to a shorter list of
 * `--commit-url`:A URL template which will be used to generate commit URLs for a repository not hosted in GitHub. `{ref}` is the placeholder that will be replaced with the commit, i.e. `--commit-url=https://gitlab.com/myUser/myRepo/commit/{ref}`. `{ghUser}` and `{ghRepo}` are available if they can be derived from package.json (Gitlab and Bitbucket URLs should be understood in package.json).
 * `--user`: Override the auto-detected GitHub user/org derived from package.json
 * `--repo`: Override the auto-detected GitHub repository name derived from package.json
+* `--cache`: Cache references to commits excluded from a comparison to avoid hitting GitHub APIs again.
 
 ## License
 
