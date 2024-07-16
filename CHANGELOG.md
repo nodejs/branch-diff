@@ -1,3 +1,9 @@
+## [3.1.0](https://github.com/nodejs/branch-diff/compare/v3.0.5...v3.1.0) (2024-07-16)
+
+### Features
+
+* support PR-URL with trailing slash ([#70](https://github.com/nodejs/branch-diff/issues/70)) ([a0d1846](https://github.com/nodejs/branch-diff/commit/a0d18469ed69fe0d55a0742901e697faf430e353))
+
 ## [3.0.5](https://github.com/nodejs/branch-diff/compare/v3.0.4...v3.0.5) (2024-07-10)
 
 ### Trivial Changes
