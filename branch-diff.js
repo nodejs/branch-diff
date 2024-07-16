@@ -53,11 +53,19 @@ async function findMergeBase (repoPath, branch1, branch2) {
   return data.substr(0, 10)
 }
 
+function normalizeIfTrailingSlash (commit) {
+  if (commit.prUrl.at(-1) === '/') {
+    commit.prUrl = commit.prUrl.slice(0, -1);
+  }
+}
+
 async function diffCollected (options, branchCommits) {
   function isInList (commit) {
+    normalizeIfTrailingSlash(commit)
     return branchCommits[0].some((c) => {
       if (commit.sha === c.sha) { return true }
       if (commit.summary === c.summary) {
+        normalizeIfTrailingSlash(c)
         if (commit.prUrl && c.prUrl) {
           return commit.prUrl === c.prUrl
         } else if (commit.author.name === c.author.name &&
