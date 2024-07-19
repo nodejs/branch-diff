@@ -54,7 +54,7 @@ async function findMergeBase (repoPath, branch1, branch2) {
 }
 
 function normalizeIfTrailingSlash (commit) {
-  if (commit.prUrl.at(-1) === '/') {
+  if (commit.prUrl && commit.prUrl.at(-1) === '/') {
     commit.prUrl = commit.prUrl.slice(0, -1)
   }
 }
