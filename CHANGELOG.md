@@ -1,3 +1,9 @@
+## [3.1.1](https://github.com/nodejs/branch-diff/compare/v3.1.0...v3.1.1) (2024-07-19)
+
+### Bug Fixes
+
+* add commit.prurl check ([#72](https://github.com/nodejs/branch-diff/issues/72)) ([1ceae1a](https://github.com/nodejs/branch-diff/commit/1ceae1abbf038a25de4609d15460fc413c627809))
+
 ## [3.1.0](https://github.com/nodejs/branch-diff/compare/v3.0.5...v3.1.0) (2024-07-16)
 
 ### Features
