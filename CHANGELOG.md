@@ -1,3 +1,20 @@
+## [3.1.2](https://github.com/nodejs/branch-diff/compare/v3.1.1...v3.1.2) (2026-01-21)
+
+### Trivial Changes
+
+* **deps:** bump actions/checkout from 4 to 5 ([#79](https://github.com/nodejs/branch-diff/issues/79)) ([81f19bf](https://github.com/nodejs/branch-diff/commit/81f19bfe35969943a1c4cd99b75eac5a2062f9f7))
+* **deps:** bump actions/checkout from 5 to 6 ([#82](https://github.com/nodejs/branch-diff/issues/82)) ([ea30da6](https://github.com/nodejs/branch-diff/commit/ea30da61fc544d78db326cbc5bbba29832ef368b))
+* **deps:** bump actions/setup-node from 4.0.3 to 4.0.4 ([f140348](https://github.com/nodejs/branch-diff/commit/f140348426dd36fddd3e14a6e32e1e9db3b81a22))
+* **deps:** bump actions/setup-node from 4.0.4 to 4.1.0 ([878b0c2](https://github.com/nodejs/branch-diff/commit/878b0c2f838ef86104838f054daa05f92304e7d0))
+* **deps:** bump actions/setup-node from 4.1.0 to 4.2.0 ([#76](https://github.com/nodejs/branch-diff/issues/76)) ([3070612](https://github.com/nodejs/branch-diff/commit/3070612e8604d5fa1b71b53d36b2531253c3cae1))
+* **deps:** bump actions/setup-node from 4.2.0 to 4.3.0 ([f10143b](https://github.com/nodejs/branch-diff/commit/f10143b2a99505d093e29f06ae9e35d08f2ee2fd))
+* **deps:** bump actions/setup-node from 4.3.0 to 4.4.0 ([5060bdd](https://github.com/nodejs/branch-diff/commit/5060bdd921bca5554b6a51c9aecae1bf26ccc5bb))
+* **deps:** bump actions/setup-node from 4.4.0 to 5.0.0 ([65a0e19](https://github.com/nodejs/branch-diff/commit/65a0e19594a3a8a035483e4feec14243dd753388))
+* **deps:** bump actions/setup-node from 5.0.0 to 6.0.0 ([b276ba3](https://github.com/nodejs/branch-diff/commit/b276ba311ea14bdce8b26a6259c294ca25aaf828))
+* **deps:** bump actions/setup-node from 6.0.0 to 6.1.0 ([#83](https://github.com/nodejs/branch-diff/issues/83)) ([abe1cea](https://github.com/nodejs/branch-diff/commit/abe1cead7bddb49c07062f8fe22c1ee616d7c16f))
+* **deps:** bump actions/setup-node from 6.1.0 to 6.2.0 ([#84](https://github.com/nodejs/branch-diff/issues/84)) ([4d0f2ca](https://github.com/nodejs/branch-diff/commit/4d0f2ca9163b553e729be05764318eed861e7473))
+* switch to npm OIDC publishing ([#85](https://github.com/nodejs/branch-diff/issues/85)) ([961182f](https://github.com/nodejs/branch-diff/commit/961182fcf5930eca95eeac09344c9d2eba2fe59e))
+
 ## [3.1.1](https://github.com/nodejs/branch-diff/compare/v3.1.0...v3.1.1) (2024-07-19)
 
 ### Bug Fixes
