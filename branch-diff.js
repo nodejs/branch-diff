@@ -82,6 +82,16 @@ async function diffCollected (options, branchCommits) {
 
   let list = branchCommits[1].filter((commit) => !isInList(commit))
 
+  if (options.limitCommits > 0) {
+    list = list.slice(-options.limitCommits)
+  }
+
+  // TODO: finish clean up the transition to skipCommits
+  // TODO: branch-diff should error with exit code on GitHub API error
+  if (options.skipCommits > 0) {
+    list = list.slice(options.skipCommits)
+  }
+
   await collectCommitLabels(list)
 
   if (options.excludeLabels.length > 0) {
@@ -132,6 +142,8 @@ async function main () {
   const endRef = argv['end-ref']
   let excludeLabels = []
   let requireLabels = []
+  let limitCommits;
+  let skipCommits;
 
   if (argv.version || argv.v) {
     return console.log(`v ${require('./package.json').version}`)
@@ -155,6 +167,14 @@ async function main () {
     requireLabels = requireLabels.concat(argv['require-label'])
   }
 
+  if (argv['limit-commits']) {
+    limitCommits = parseInt(argv['limit-commits'], 10);
+  }
+
+  if (argv['skip-commits']) {
+    skipCommits = parseInt(argv['skip-commits'], 10);
+  }
+
   if (argv.user) {
     ghId.user = argv.user
   }
@@ -167,6 +187,8 @@ async function main () {
     group,
     excludeLabels,
     requireLabels,
+    limitCommits,
+    skipCommits,
     endRef
   }
 

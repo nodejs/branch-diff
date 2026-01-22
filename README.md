@@ -42,6 +42,12 @@ But the comparison isn't quite as strict, generally leading to a shorter list of
 * `--commit-url`:A URL template which will be used to generate commit URLs for a repository not hosted in GitHub. `{ref}` is the placeholder that will be replaced with the commit, i.e. `--commit-url=https://gitlab.com/myUser/myRepo/commit/{ref}`. `{ghUser}` and `{ghRepo}` are available if they can be derived from package.json (Gitlab and Bitbucket URLs should be understood in package.json).
 * `--user`: Override the auto-detected GitHub user/org derived from package.json
 * `--repo`: Override the auto-detected GitHub repository name derived from package.json
+* `--limit-commits`: `number` Limits the number of commits for branch-diff to work with, e.g: `--limit-commits=500`. Note that this limit is set prior to applying all filters, this number does not represent the number of resulting commits.
+* `--skip-commits`: `number` Defines an amount of commits to be skipped from the initial difference list built between `base-branch` and `comparison-branch`, e.g: `--skip-commits=400`.
+
+### Reducing the amount of commits to avoid hitting GitHub rate limits
+
+Using the `limit-commits` and `skip-commits` options allow users to reduce the amount of commits that branch-diff will work with in order to avoid hitting GitHub API rate limits.
 
 ## License
 
