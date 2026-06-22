@@ -1,3 +1,9 @@
+## [3.1.5](https://github.com/nodejs/branch-diff/compare/v3.1.4...v3.1.5) (2026-06-22)
+
+### Trivial Changes
+
+* **deps:** bump actions/checkout from 6 to 7 ([#88](https://github.com/nodejs/branch-diff/issues/88)) ([c7a04e0](https://github.com/nodejs/branch-diff/commit/c7a04e0b42791a0721b9e7b43f6dd2e39b45f473))
+
 ## [3.1.4](https://github.com/nodejs/branch-diff/compare/v3.1.3...v3.1.4) (2026-04-28)
 
 ### Trivial Changes
