@@ -1,6 +1,14 @@
 ## [3.1.7](https://github.com/nodejs/branch-diff/compare/v3.1.6...v3.1.7) (2026-07-29)
 
+### Trivial Changes
+
+* **ci:** slow down dependabot, group, pin actions by hash ([#90](https://github.com/nodejs/branch-diff/issues/90)) ([a31e2ff](https://github.com/nodejs/branch-diff/commit/a31e2ffef6d61d18ce45bffec9cbabe710566d48))
+
 ## [3.1.6](https://github.com/nodejs/branch-diff/compare/v3.1.5...v3.1.6) (2026-07-16)
+
+### Trivial Changes
+
+* **deps:** bump actions/setup-node from 6.4.0 to 7.0.0 ([#89](https://github.com/nodejs/branch-diff/issues/89)) ([53e39b5](https://github.com/nodejs/branch-diff/commit/53e39b50af203c68c004e36654a2e7d546b9b118))
 
 ## [3.1.5](https://github.com/nodejs/branch-diff/compare/v3.1.4...v3.1.5) (2026-06-22)
 
