@@ -1,3 +1,9 @@
+## [3.1.8](https://github.com/nodejs/branch-diff/compare/v3.1.7...v3.1.8) (2026-07-30)
+
+### Trivial Changes
+
+* downgrade broken changelog maker, backfill, rework GHA ([#91](https://github.com/nodejs/branch-diff/issues/91)) ([3c50d17](https://github.com/nodejs/branch-diff/commit/3c50d1791091a70dea10228c533e74cfb9036a7a))
+
 ## [3.1.7](https://github.com/nodejs/branch-diff/compare/v3.1.6...v3.1.7) (2026-07-29)
 
 ### Trivial Changes
