@@ -5,11 +5,10 @@ import { createRequire } from 'module'
 import path from 'path'
 import process from 'process'
 import { pipeline } from 'stream/promises'
-import { promisify } from 'util'
+import { parseArgs, promisify } from 'util'
 import commitStream from 'commit-stream'
 import split2 from 'split2'
 import pkgtoId from 'pkg-to-id'
-import minimist from 'minimist'
 import { isReleaseCommit } from 'changelog-maker/groups'
 import { processCommits } from 'changelog-maker/process-commits'
 import { collectCommitLabels } from 'changelog-maker/collect-commit-labels'
@@ -122,38 +121,37 @@ async function collect (repoPath, branch, startCommit, endRef) {
 }
 
 async function main () {
-  const minimistConfig = {
-    boolean: ['version', 'group', 'patch-only', 'simple', 'filter-release', 'reverse']
-  }
-  const argv = minimist(process.argv.slice(2), minimistConfig)
-  const branch1 = argv._[0]
-  const branch2 = argv._[1]
-  const group = argv.group || argv.g
-  const endRef = argv['end-ref']
-  let excludeLabels = []
-  let requireLabels = []
+  const { values: argv, positionals } = parseArgs({
+    allowPositionals: true,
+    options: {
+      'commit-url': { type: 'string' },
+      'end-ref': { type: 'string' },
+      'exclude-label': { type: 'string', multiple: true },
+      'filter-release': { type: 'boolean' },
+      'find-matching-prs': { type: 'boolean' },
+      format: { type: 'string' },
+      group: { type: 'boolean', short: 'g' },
+      'patch-only': { type: 'boolean' },
+      quiet: { type: 'boolean', short: 'q' },
+      repo: { type: 'string' },
+      'require-label': { type: 'string', multiple: true },
+      reverse: { type: 'boolean' },
+      user: { type: 'string' },
+      version: { type: 'boolean', short: 'v' }
+    }
+  })
+  const [branch1, branch2] = positionals
+  const splitLabels = (labels = []) => labels.flatMap((l) => l.split(','))
 
-  if (argv.version || argv.v) {
+  if (argv.version) {
     return console.log(`v ${require('./package.json').version}`)
   }
 
+  const excludeLabels = splitLabels(argv['exclude-label'])
   if (argv['patch-only']) {
-    excludeLabels = ['semver-minor', 'semver-major']
+    excludeLabels.unshift('semver-minor', 'semver-major')
   }
-
-  if (argv['exclude-label']) {
-    if (!Array.isArray(argv['exclude-label'])) {
-      argv['exclude-label'] = argv['exclude-label'].split(',')
-    }
-    excludeLabels = excludeLabels.concat(argv['exclude-label'])
-  }
-
-  if (argv['require-label']) {
-    if (!Array.isArray(argv['require-label'])) {
-      argv['require-label'] = argv['require-label'].split(',')
-    }
-    requireLabels = requireLabels.concat(argv['require-label'])
-  }
+  const requireLabels = splitLabels(argv['require-label'])
 
   if (argv.user) {
     ghId.user = argv.user
@@ -164,10 +162,10 @@ async function main () {
   }
 
   const options = {
-    group,
+    group: argv.group,
     excludeLabels,
     requireLabels,
-    endRef
+    endRef: argv['end-ref']
   }
 
   let list = await branchDiff(branch1, branch2, options)
