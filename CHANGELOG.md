@@ -1,3 +1,18 @@
+## [4.0.0](https://github.com/nodejs/branch-diff/compare/v3.1.8...v4.0.0) (2026-10-05)
+
+### ⚠ BREAKING CHANGES
+
+* --sha, --plaintext, --markdown and --simple are
+removed; use --format=<sha|plaintext|markdown|simple|messageonly>.
+
+### Bug Fixes
+
+* strict CLI parsing, drop legacy format shorthands ([9980df7](https://github.com/nodejs/branch-diff/commit/9980df735f27cd0e1316716e92e8bca26c8ad875))
+
+### Trivial Changes
+
+* **deps:** bump changelog-maker from 4.4.52 to 5.0.5 ([a0aad9e](https://github.com/nodejs/branch-diff/commit/a0aad9ef5f990e5f795c8a5c02c2f69840fe7067))
+
 ## [3.1.8](https://github.com/nodejs/branch-diff/compare/v3.1.7...v3.1.8) (2026-07-30)
 
 ### Trivial Changes
