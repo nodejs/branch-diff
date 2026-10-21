@@ -42,6 +42,7 @@ But the comparison isn't quite as strict, generally leading to a shorter list of
 * `--quiet` or `-q`: Do not print to stdout.
 * `--user`: Override the auto-detected GitHub user/org derived from package.json
 * `--repo`: Override the auto-detected GitHub repository name derived from package.json
+* `--cache`: Cache references to commits excluded from a comparison to avoid hitting GitHub APIs again.
 
 Unknown options are an error. The `--sha`, `--plaintext`, `--markdown` and `--simple` shorthands were removed in v4; use `--format=<format>`.
 
