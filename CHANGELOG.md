@@ -1,3 +1,9 @@
+## [4.0.1](https://github.com/nodejs/branch-diff/compare/v4.0.0...v4.0.1) (2026-11-02)
+
+### Trivial Changes
+
+* **deps:** bump actions/setup-node ([#97](https://github.com/nodejs/branch-diff/issues/97)) ([cd8508f](https://github.com/nodejs/branch-diff/commit/cd8508ff4582339a83133b19019d8768470975d6))
+
 ## [4.0.0](https://github.com/nodejs/branch-diff/compare/v3.1.8...v4.0.0) (2026-10-05)
 
 ### ⚠ BREAKING CHANGES
