@@ -136,6 +136,7 @@ async function main () {
       repo: { type: 'string' },
       'require-label': { type: 'string', multiple: true },
       reverse: { type: 'boolean' },
+      'sequence-drop': { type: 'string' },
       user: { type: 'string' },
       version: { type: 'boolean', short: 'v' }
     }
