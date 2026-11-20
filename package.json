@@ -19,7 +19,6 @@
   "dependencies": {
     "changelog-maker": "^5.0.5",
     "commit-stream": "^2.0.1",
-    "gitexec": "^2.0.1",
     "pkg-to-id": "^0.0.3",
     "split2": "^4.2.0"
   },

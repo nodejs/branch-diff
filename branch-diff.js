@@ -5,14 +5,15 @@ import { createRequire } from 'module'
 import path from 'path'
 import process from 'process'
 import { pipeline } from 'stream/promises'
-import { parseArgs, promisify } from 'util'
+import { spawn } from 'child_process'
+import { once } from 'events'
+import { parseArgs } from 'util'
 import commitStream from 'commit-stream'
 import split2 from 'split2'
 import pkgtoId from 'pkg-to-id'
 import { isReleaseCommit } from 'changelog-maker/groups'
 import { processCommits } from 'changelog-maker/process-commits'
 import { collectCommitLabels } from 'changelog-maker/collect-commit-labels'
-import gitexec from 'gitexec'
 
 const pkgFile = path.join(process.cwd(), 'package.json')
 const require = createRequire(import.meta.url)
@@ -47,9 +48,22 @@ export async function branchDiff (branch1, branch2, options) {
 }
 
 async function findMergeBase (repoPath, branch1, branch2) {
-  const gitcmd = `git merge-base ${branch1} ${branch2}`
-  const data = await promisify(gitexec.execCollect)(repoPath, gitcmd)
-  return data.substr(0, 10)
+  const cp = spawn('git', ['merge-base', branch1, branch2], {
+    cwd: repoPath,
+    stdio: ['ignore', 'pipe', 'inherit']
+  })
+  const closeEv = once(cp, 'close');
+  closeEv.catch(() => {})
+
+  const chunks = await Promise.race([
+    once(cp, 'error').then(e => Promise.reject(e[0])),
+    cp.stdout.toArray()
+  ])
+  const [code, signal] = await closeEv
+  if (code !== 0) {
+    throw new Error(`Command "git merge-base ${branch1} ${branch2}" exited with code ${code} and signal ${signal}`)
+  }
+  return Buffer.concat(chunks).toString('utf-8', 0, 10)
 }
 
 function normalizeIfTrailingSlash (commit) {
@@ -107,16 +121,33 @@ async function collect (repoPath, branch, startCommit, endRef) {
   const untilcmd = endRef ? replace(commitdatecmd, { refcmd: endrefcmd }) : ''
   const _gitcmd = replace(gitcmd, { branch, startCommit, untilcmd })
 
+  const cp = spawn(_gitcmd, [], {
+    shell: true,
+    cwd: repoPath,
+    stdio: ['ignore', 'pipe', 'inherit']
+  })
+  const closeEv = once(cp, 'close');
+  closeEv.catch(() => {})
+
   const commitList = []
-  await pipeline(
-    gitexec.exec(repoPath, _gitcmd),
-    split2(),
-    commitStream(ghId.user, ghId.repo),
-    async function * (source) {
-      for await (const commit of source) {
-        commitList.push(commit)
+  await Promise.race([
+    once(cp, 'error').then(e => Promise.reject(e[0])),
+    pipeline(
+      cp.stdout,
+      split2(),
+      commitStream(ghId.user, ghId.repo),
+      async function * (source) {
+        for await (const commit of source) {
+          commitList.push(commit)
+        }
       }
-    })
+    )
+  ])
+  const [code, signal] = await closeEv
+  if (code !== 0) {
+    throw new Error(`Command "${_gitcmd}" exited with code ${code} and signal ${signal}`)
+  }
+
   return commitList
 }
 
