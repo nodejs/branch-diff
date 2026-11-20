@@ -20,7 +20,7 @@ const pkgData = fs.existsSync(pkgFile) ? require(pkgFile) : {}
 const pkgId = pkgtoId(pkgData)
 const refcmd = 'git rev-list --max-count=1 {{ref}}'
 const commitdatecmd = '$(git show -s --format=%cd `{{refcmd}}`)'
-const gitcmd = 'git log {{startCommit}}..{{branch}} --until="{{untilcmd}}"'
+const gitcmd = 'git log {{startCommit}}..{{branch}} --until="{{untilcmd}}"{{gitLogFlags}}'
 const ghId = {
   user: pkgId.user || 'nodejs',
   repo: pkgId.name || 'node'
@@ -41,7 +41,7 @@ export async function branchDiff (branch1, branch2, options) {
   const repoPath = options.repoPath || process.cwd()
   const commit = await findMergeBase(repoPath, branch1, branch2)
   const branchCommits = await Promise.all([branch1, branch2].map(async (branch) => {
-    return collect(repoPath, branch, commit, branch === branch2 && options.endRef)
+    return collect(repoPath, branch, commit, branch === branch2 && options.endRef, options.gitLogFlags)
   }))
   return await diffCollected(options, branchCommits)
 }
@@ -102,10 +102,10 @@ async function diffCollected (options, branchCommits) {
   return list
 }
 
-async function collect (repoPath, branch, startCommit, endRef) {
+async function collect (repoPath, branch, startCommit, endRef, gitLogFlags = '') {
   const endrefcmd = endRef && replace(refcmd, { ref: endRef })
   const untilcmd = endRef ? replace(commitdatecmd, { refcmd: endrefcmd }) : ''
-  const _gitcmd = replace(gitcmd, { branch, startCommit, untilcmd })
+  const _gitcmd = replace(gitcmd, { branch, startCommit, untilcmd, gitLogFlags })
 
   const commitList = []
   await pipeline(
@@ -127,6 +127,7 @@ async function main () {
       'commit-url': { type: 'string' },
       'end-ref': { type: 'string' },
       'exclude-label': { type: 'string', multiple: true },
+      'extra-git-log-flags': { type: 'string' },
       'filter-release': { type: 'boolean' },
       'find-matching-prs': { type: 'boolean' },
       format: { type: 'string' },
@@ -162,6 +163,7 @@ async function main () {
   }
 
   const options = {
+    gitLogFlags: argv['extra-git-log-flags'],
     group: argv.group,
     excludeLabels,
     requireLabels,
