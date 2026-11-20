@@ -52,7 +52,7 @@ async function findMergeBase (repoPath, branch1, branch2) {
     cwd: repoPath,
     stdio: ['ignore', 'pipe', 'inherit']
   })
-  const closeEv = once(cp, 'close');
+  const closeEv = once(cp, 'close')
   closeEv.catch(() => {})
 
   const chunks = await Promise.race([
@@ -126,7 +126,7 @@ async function collect (repoPath, branch, startCommit, endRef) {
     cwd: repoPath,
     stdio: ['ignore', 'pipe', 'inherit']
   })
-  const closeEv = once(cp, 'close');
+  const closeEv = once(cp, 'close')
   closeEv.catch(() => {})
 
   const commitList = []
