@@ -1,3 +1,9 @@
+## [4.0.2](https://github.com/nodejs/branch-diff/compare/v4.0.1...v4.0.2) (2026-11-20)
+
+### Trivial Changes
+
+* do not run CI more than once ([#101](https://github.com/nodejs/branch-diff/issues/101)) ([91581e3](https://github.com/nodejs/branch-diff/commit/91581e32e40822aa65f8377b1992e1f2efd32b22))
+
 ## [4.0.1](https://github.com/nodejs/branch-diff/compare/v4.0.0...v4.0.1) (2026-11-02)
 
 ### Trivial Changes
