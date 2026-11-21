@@ -5,14 +5,15 @@ import { createRequire } from 'module'
 import path from 'path'
 import process from 'process'
 import { pipeline } from 'stream/promises'
-import { parseArgs, promisify } from 'util'
+import { spawn } from 'child_process'
+import { once } from 'events'
+import { parseArgs } from 'util'
 import commitStream from 'commit-stream'
 import split2 from 'split2'
 import pkgtoId from 'pkg-to-id'
 import { isReleaseCommit } from 'changelog-maker/groups'
 import { processCommits } from 'changelog-maker/process-commits'
 import { collectCommitLabels } from 'changelog-maker/collect-commit-labels'
-import gitexec from 'gitexec'
 
 const pkgFile = path.join(process.cwd(), 'package.json')
 const require = createRequire(import.meta.url)
@@ -33,6 +34,25 @@ function replace (s, m) {
   return s
 }
 
+async function spawnPromisified (...args) {
+  const callback = args.pop()
+  const cp = spawn(...args)
+
+  const closeEv = once(cp, 'close')
+  closeEv.catch(() => {})
+
+  const result = await Promise.race([
+    once(cp, 'error').then(e => Promise.reject(e[0])),
+    callback(cp.stdout)
+  ])
+  const [code, signal] = await closeEv
+  if (code !== 0) {
+    throw new Error(`Command "${args[0]} ${args[1].join(' ')}" exited with ${signal || code}`)
+  }
+
+  return result
+}
+
 export async function branchDiff (branch1, branch2, options) {
   if (!branch1 || !branch2) {
     throw new Error('Must supply two branch names to compare')
@@ -47,9 +67,11 @@ export async function branchDiff (branch1, branch2, options) {
 }
 
 async function findMergeBase (repoPath, branch1, branch2) {
-  const gitcmd = `git merge-base ${branch1} ${branch2}`
-  const data = await promisify(gitexec.execCollect)(repoPath, gitcmd)
-  return data.substr(0, 10)
+  const chunks = await spawnPromisified('git', ['merge-base', branch1, branch2], {
+    cwd: repoPath,
+    stdio: ['ignore', 'pipe', 'inherit']
+  }, stdout => stdout.toArray())
+  return Buffer.concat(chunks).toString('utf-8', 0, 10)
 }
 
 function normalizeIfTrailingSlash (commit) {
@@ -108,15 +130,20 @@ async function collect (repoPath, branch, startCommit, endRef) {
   const _gitcmd = replace(gitcmd, { branch, startCommit, untilcmd })
 
   const commitList = []
-  await pipeline(
-    gitexec.exec(repoPath, _gitcmd),
+  await spawnPromisified(_gitcmd, [], {
+    shell: true,
+    cwd: repoPath,
+    stdio: ['ignore', 'pipe', 'inherit']
+  }, (stdout) => pipeline(
+    stdout,
     split2(),
     commitStream(ghId.user, ghId.repo),
     async function * (source) {
       for await (const commit of source) {
         commitList.push(commit)
       }
-    })
+    }
+  ))
   return commitList
 }
 
