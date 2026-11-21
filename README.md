@@ -29,15 +29,17 @@ But the comparison isn't quite as strict, generally leading to a shorter list of
 * `--exclude-label`: Exclude any commits from the list that come from a GitHub pull request with the given label. Multiple `--exclude-label` options may be provided, they will also be split by `,`. e.g. `--exclude-label=semver-major,meta`.
 * `--require-label`: Only include commits in the list that come from a GitHub pull request with the given label. Multiple `--require-label` options may be provided, they will also be split by `,`. e.g. `--require-label=test,doc`.
 * `--patch-only`: An alias for `--exclude-label=semver-major,semver-minor`.
-* `--format`: Dictates what formatting the output will have. Possible options are: `simple`, `markdown`, `plaintext`, `messageonly` and `sha`. The default is to print a `simple` output suitable for stdout. An unknown format is an error.
-  - `simple`: Don't print full markdown output, good for console printing without the additional fluff.
-  - `sha`: Print only the 10-character truncated commit hashes. Good for piping though additional tooling, such as `xargs git cherry-pick` for applying commits.
+* `--format`: Dictates what formatting the output will have. Possible options are:
+  - `simple`: Don't print full markdown output, good for console printing without the additional fluff. **This is default**.
+  - `sequence`: Hybrid format that can be pasted directly in the sequence editor of a `git rebase --interactive` session, with commit title, author, labels and PR URL as comments compatible with interactive rebase input.
+  - `sha`: Print only the 10-character truncated commit hashes.
   - `plaintext`: A very simple form, without commit details, implies `--group`.
   - `markdown`: A Markdown formatted from, with links and proper escaping.
-  - `messageonly`: Only the commit message, implies `--group`.
+  - `messageonly`: Displays the commit message only, implies `--group`.
 * `--filter-release`: Exclude Node-style release commits from the list. e.g. `Working on v1.0.0` or `2015-10-21 Version 2.0.0`.
 * `--reverse`: Reverse the results, this is especially useful when piping output to `xargs`.
 * `--commit-url`:A URL template which will be used to generate commit URLs for a repository not hosted in GitHub. `{ref}` is the placeholder that will be replaced with the commit, i.e. `--commit-url=https://gitlab.com/myUser/myRepo/commit/{ref}`. `{ghUser}` and `{ghRepo}` are available if they can be derived from package.json (Gitlab and Bitbucket URLs should be understood in package.json).
+* `--sequence-drop=<label1>[,<label2>[,…]]`: When `--format=sequence`, will output the commits belonging to a PR with a label listed here as `drop` instead of `pick`. This can be useful for human backporter to understand why a specific commit does not apply cleanly, to spot which commit might be creating conflicts.
 * `--find-matching-prs`: Use the GitHub API to find the pull requests that match commits that don't have `PR-URL` metadata in their message text.
 * `--quiet` or `-q`: Do not print to stdout.
 * `--user`: Override the auto-detected GitHub user/org derived from package.json
