@@ -34,6 +34,25 @@ function replace (s, m) {
   return s
 }
 
+async function spawnPromisified (...args) {
+  const callback = args.pop()
+  const cp = spawn(...args)
+
+  const closeEv = once(cp, 'close')
+  closeEv.catch(() => {})
+
+  const result = await Promise.race([
+    once(cp, 'error').then(e => Promise.reject(e[0])),
+    callback(cp.stdout)
+  ])
+  const [code, signal] = await closeEv
+  if (code !== 0) {
+    throw new Error(`Command "${args[0]} ${args[1].join(' ')}" exited with ${signal || code}`)
+  }
+
+  return result
+}
+
 export async function branchDiff (branch1, branch2, options) {
   if (!branch1 || !branch2) {
     throw new Error('Must supply two branch names to compare')
@@ -48,21 +67,10 @@ export async function branchDiff (branch1, branch2, options) {
 }
 
 async function findMergeBase (repoPath, branch1, branch2) {
-  const cp = spawn('git', ['merge-base', branch1, branch2], {
+  const chunks = await spawnPromisified('git', ['merge-base', branch1, branch2], {
     cwd: repoPath,
     stdio: ['ignore', 'pipe', 'inherit']
-  })
-  const closeEv = once(cp, 'close')
-  closeEv.catch(() => {})
-
-  const chunks = await Promise.race([
-    once(cp, 'error').then(e => Promise.reject(e[0])),
-    cp.stdout.toArray()
-  ])
-  const [code, signal] = await closeEv
-  if (code !== 0) {
-    throw new Error(`Command "git merge-base ${branch1} ${branch2}" exited with code ${code} and signal ${signal}`)
-  }
+  }, stdout => stdout.toArray())
   return Buffer.concat(chunks).toString('utf-8', 0, 10)
 }
 
@@ -121,33 +129,21 @@ async function collect (repoPath, branch, startCommit, endRef) {
   const untilcmd = endRef ? replace(commitdatecmd, { refcmd: endrefcmd }) : ''
   const _gitcmd = replace(gitcmd, { branch, startCommit, untilcmd })
 
-  const cp = spawn(_gitcmd, [], {
+  const commitList = []
+  await spawnPromisified(_gitcmd, [], {
     shell: true,
     cwd: repoPath,
     stdio: ['ignore', 'pipe', 'inherit']
-  })
-  const closeEv = once(cp, 'close')
-  closeEv.catch(() => {})
-
-  const commitList = []
-  await Promise.race([
-    once(cp, 'error').then(e => Promise.reject(e[0])),
-    pipeline(
-      cp.stdout,
-      split2(),
-      commitStream(ghId.user, ghId.repo),
-      async function * (source) {
-        for await (const commit of source) {
-          commitList.push(commit)
-        }
+  }, (stdout) => pipeline(
+    stdout,
+    split2(),
+    commitStream(ghId.user, ghId.repo),
+    async function * (source) {
+      for await (const commit of source) {
+        commitList.push(commit)
       }
-    )
-  ])
-  const [code, signal] = await closeEv
-  if (code !== 0) {
-    throw new Error(`Command "${_gitcmd}" exited with code ${code} and signal ${signal}`)
-  }
-
+    }
+  ))
   return commitList
 }
 
